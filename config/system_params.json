@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "v2.1.2",
+  "updated_at": "2026-09-01",
+  "last_operator": "ZCode",
+  "last_change_summary": "阶段六B1：新增 intraday_trading 配置类（盘中交易窗口/冷却/执行级别/涨跌停保护）",
+  "categories": {
+    "sell_monitor": {
+      "name": "卖出五级监控提醒层（只读账本不代操盘）",
+      "description": "盘中扫描模拟盘持仓的五级提醒阈值；与各博主契约的成交阈值相互独立",
+      "params": {
+        "strong_take_pct": 2.5,
+        "watch_take_pct": 1.0,
+        "stop_loss_pct": -3.0,
+        "t1_check_hhmm": 1003,
+        "max_hold_days": 3,
+        "watch_first_hour_skip_min": 30
+      }
+    },
+    "blogger_strategies": {
+      "name": "6 位博主/AI 角色量化策略与 Skill 契约参数",
+      "description": "严格绑定 6 位博主 5 模块 Skill 契约，控制选股门槛、仓位模型与止盈止损边界",
+      "params": {
+        "liao_xiaoai": {
+          "name": "廖小爱 (中国特色价值投资)",
+          "position_model": "3-3-1模型 (30%底仓+30%深蹲黄金坑+10%机动+30%场外现金子弹)",
+          "stop_loss_pct": -6.0,
+          "take_profit_pct": 12.0,
+          "min_market_cap_billion": 80.0,
+          "pe_max": 45.0,
+          "roe_min": 10.0,
+          "allowed_sectors": [
+            "算力基础设施 (电力/液冷/光通信)",
+            "先进制程与半导体核心芯片",
+            "国家战略资源 (铜/黄金/稀土)",
+            "自主可控核心资产",
+            "高壁垒自费医药"
+          ],
+          "excluded_sectors": [
+            "纯投机高位连板妖股",
+            "二三线跟风杂毛",
+            "无盈利无主业题材概念"
+          ]
+        },
+        "cool": {
+          "name": "酷儿 (K线假跌破与结构反转)",
+          "pattern": "20MA假跌破放量大阳反转 (极窄止损 + 3:1盈亏比)",
+          "stop_loss_pct": -3.0,
+          "take_profit_pct": 9.0,
+          "risk_reward_ratio": 3.0,
+          "market_cap_range_billion": [
+            60.0,
+            800.0
+          ],
+          "turnover_ratio_min": 2.5,
+          "trash_time_empty_position": true,
+          "allowed_sectors": [
+            "高弹性科技成长先锋",
+            "放量结构突破中盘股",
+            "算力与半导体主升浪标的"
+          ],
+          "excluded_sectors": [
+            "千亿以上滞胀大盘股",
+            "日换手率不足1.0%的僵尸股",
+            "均线空头排列破位阴跌股"
+          ]
+        },
+        "yintwentao": {
+          "name": "殷文涛·梵爹 (三大阵营博弈与光/芯轮动)",
+          "core_framework": "三大阵营博弈 (科技先锋之矛 vs 老登避险停机坪 vs 游资情绪)",
+          "turnover_balance_line_trillion": 2.4,
+          "turnover_breakout_line_trillion": 2.6,
+          "min_stock_volume_billion": 4.5,
+          "stop_loss_pct": -3.5,
+          "take_profit_pct": 8.5,
+          "target_position_pct": 50.0,
+          "allowed_sectors": [
+            "光模块 (CPO/高速光引擎)",
+            "高速与算力 PCB 板",
+            "半导体先进制程设备与材料",
+            "商业航天与先锋科技"
+          ],
+          "excluded_sectors": [
+            "四大行与传统老登防守避险股",
+            "缺乏主力大资金进出的冷门股",
+            "高位加速见顶微盘股"
+          ]
+        },
+        "hanshu": {
+          "name": "韩叔·趣聊财经 (绝活生命线与荡秋千差价)",
+          "core_framework": "20MA/30MA绝活生命线低吸 + 5天线荡秋千做差价 (每天送零用钱)",
+          "position_structure": "50%底仓 + 25%做T差价仓 + 25%预备队现金",
+          "stop_loss_pct": -3.5,
+          "take_profit_pct": 6.0,
+          "pe_range": [
+            10.0,
+            75.0
+          ],
+          "resistance_band": [
+            3985,
+            4040
+          ],
+          "allowed_sectors": [
+            "长鑫存储与芯片产业链",
+            "宇树/人形机器人产业链",
+            "自费创新药与医疗出海",
+            "精密制造与硬科技"
+          ],
+          "excluded_sectors": [
+            "银行/保险/传统金融",
+            "房地产产业链",
+            "白酒与传统消费",
+            "千倍PE题材杂毛"
+          ]
+        },
+        "ai_alpha": {
+          "name": "AI-Alpha (多因子量化智脑)",
+          "factors": [
+            "5MA > 10MA > 20MA 多头排列扩散",
+            "20日收盘价创阶段新高",
+            "当日量比 > 1.2",
+            "基本面 PE 在 0 ~ 120 倍良性区间"
+          ],
+          "stop_loss_pct": -4.5,
+          "take_profit_model": "ATR(14)*2.2 动态追踪止盈",
+          "atr_period": 14,
+          "atr_multiplier": 2.2,
+          "min_volume_million": 200.0
+        },
+        "anti_demo": {
+          "name": "极短线情绪反指哨兵 (高位逆向熔断)",
+          "melt_down_triggers": [
+            "短线连续 3 连板及以上",
+            "BIAS20 (20日乖离率) > 18.0%",
+            "单日换手率 > 25.0%"
+          ],
+          "blacklist_interception": true,
+          "consensus_penalty_score": -0.2,
+          "high_exit_trigger": true
+        }
+      }
+    },
+    "simulation_and_risk": {
+      "name": "AI 模拟盘与真实交易风控参数",
+      "description": "控制 6 位博主 10 万元账户的资金规模、交易费率、A股T+1硬约束及防篡改审计",
+      "params": {
+        "capital_per_blogger": 100000.0,
+        "t_plus_one_enforced": true,
+        "stamp_duty_pct": 0.05,
+        "commission_rate": 0.0003,
+        "min_commission": 5.0,
+        "slippage_pct": 0.1,
+        "price_limit_pct_mainboard": 10.0,
+        "price_limit_pct_chinext_star": 20.0,
+        "sha256_manifest_enforced": true,
+        "daily_settlement_time": "15:20:00"
+      }
+    },
+    "stock_universe": {
+      "name": "沪深主板核心选股大池与过滤规则",
+      "description": "严格筛选 3103 家纯正主板资产，排除高风险、退市及非主板标的",
+      "params": {
+        "total_mainboard_universe": 3103,
+        "exclude_st": true,
+        "exclude_star_market": true,
+        "exclude_chinext": true,
+        "exclude_bse": true,
+        "min_liquidity_volume_million": 80.0,
+        "concurrent_threads": 20,
+        "batch_fetch_chunk_size": 80
+      }
+    },
+    "chart_and_sparkline": {
+      "name": "分时走势图与图表专业渲染参数",
+      "description": "控制大盘分时 240 分钟 X 轴映射、午间中轴线、呼吸 Padding 与折线精细度",
+      "params": {
+        "ashare_total_minutes": 240,
+        "morning_session_minutes": 120,
+        "afternoon_session_minutes": 120,
+        "sparkline_pad_y_ratio": 0.08,
+        "sparkline_grid_lines": 3,
+        "sparkline_midline_enabled": true,
+        "sparkline_polyline_threshold": 20,
+        "live_quote_poll_interval_sec": 5,
+        "intraday_fetch_interval_min": 5
+      }
+    },
+    "decision_gate": {
+      "name": "阶段五·决策门（因子检查单/组合风控/反方辩论/拥挤度）",
+      "description": "模拟盘买入前最后一道闸：利好加成、利空否决、组合超限拒单、辩论罚分否决、拥挤度折扣。全部权重可调。",
+      "params": {
+        "boost_strong_positive": 15,
+        "veto_negative_sentiment": -0.5,
+        "priced_in_penalty_threshold": 80,
+        "priced_in_penalty": 10,
+        "risk_off_discount": 0.8,
+        "max_total_position_pct": 80,
+        "max_industry_pct": 40,
+        "max_daily_new_buys": 3,
+        "crowded_theme_after": 2,
+        "crowded_theme_factor": 0.5,
+        "debate_veto_penalty": 25,
+        "debate_max_per_day": 3
+      }
+    },
+    "news_source": {
+      "name": "阶段五A0·新闻来源档位加权",
+      "description": "score_news 第四维：来源权威度加分（关键词匹配 source 字段）。",
+      "params": {
+        "source_weights": {
+          "财联社": 5,
+          "东方财富": 4,
+          "东财": 4,
+          "新浪": 3,
+          "同花顺": 2,
+          "富途": 2
+        }
+      }
+    },
+    "intraday_trading": {
+      "description": "阶段六：盘中实时交易执行（用户 2026-09-01 三决策：买卖全盘中/回测按实价/契约执行+L级只提醒）",
+      "params": {
+        "enabled": true,
+        "trade_windows": [
+          [
+            "09:37",
+            "11:28"
+          ],
+          [
+            "13:05",
+            "14:55"
+          ]
+        ],
+        "cooldown_minutes": 30,
+        "signal_confirm_minutes": 0,
+        "execute_levels": {
+          "contract_stop": true,
+          "contract_take_profit": true,
+          "trailing": true,
+          "L1_L2_L4_L5": "alert_only"
+        },
+        "limit_up_block_buy": true
+      }
+    }
+  }
+}

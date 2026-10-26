@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>V7 · 历史撮合演示</title>
+  <link rel="stylesheet" href="/workbench_v7/css/public_demo.css">
+</head>
+<body>
+  <main>
+    <header><a class="brand" href="/demo">V7 <span>PUBLIC PREVIEW</span></a><a href="/v7">浏览原工作台 →</a></header>
+    <section class="intro">
+      <div class="eyebrow">个人决策工作台 / 核心流程演示</div>
+      <h1>一笔交易，如何成为<br>可核对的记录。</h1>
+      <p>使用三条历史行情，输入一组明确的假设订单，查看撮合费用、T+1 拦截与账本核对。这里没有实时推荐或真实账户。</p>
+      <div class="actions"><button id="run-demo" type="button">运行离线回放</button><span id="status" role="status" aria-live="polite">准备读取历史样本</span></div>
+    </section>
+    <section class="metrics" aria-label="回放结果">
+      <article><span>期初虚拟资金</span><strong id="initial">—</strong></article>
+      <article><span>假设交易净盈亏</span><strong id="pnl">—</strong></article>
+      <article><span>当日卖出</span><strong id="t1">—</strong></article>
+      <article><span>账本核对</span><strong id="ledger-status">—</strong></article>
+    </section>
+    <section class="panel">
+      <div class="section-heading"><div><div class="eyebrow">01 / 数据</div><h2 id="sample-title">历史行情样本</h2></div><span class="badge">未复权 · 收盘价代理</span></div>
+      <p id="sample-source" class="muted">行情来源与日期将在读取后显示。</p>
+      <div class="table-scroll"><table><thead><tr><th>交易日</th><th>开盘</th><th>最高</th><th>最低</th><th>收盘</th></tr></thead><tbody id="bars"></tbody></table></div>
+      <p class="note">第一日作为前收基准；第二日假设买入并尝试同日卖出；第三日假设退出。日线价格不证明盘中一定能成交。</p>
+    </section>
+    <section class="panel">
+      <div class="eyebrow">02 / 执行与约束</div><h2>从指令到成交，再到账本。</h2>
+      <ol class="timeline" id="timeline"></ol>
+      <div class="table-scroll"><table><thead><tr><th>假设交易日</th><th>方向</th><th>股数</th><th>含滑点价格</th><th>佣金</th><th>印花税</th></tr></thead><tbody id="fills"></tbody></table></div>
+      <p class="note">买入指令由演示场景预设，不表示策略选中了该股票。结果来自项目原有的规则、费用、撮合及账户实现。</p>
+    </section>
+    <details class="panel"><summary>查看本次计算与样本来源</summary><pre id="raw-result">尚未运行</pre></details>
+    <footer>v0.1-preview · 历史假设回放 · 未启动调度器、生产赛季或 Forward 计数</footer>
+  </main>
+  <script src="/workbench_v7/js/public_demo.js"></script>
+</body>
+</html>

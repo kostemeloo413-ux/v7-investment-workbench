@@ -1,0 +1,45 @@
+# ============================================================
+# 常驻调度时间表（trading_daemon 读取）
+# cron 为5段: 分 时 日 月 周；APScheduler 周字段使用 mon-fri（数值0=周一）
+# 容错字段:
+#   catchup            错过(如开机晚)后当天是否补跑一次
+#   skip_stale_minutes 超过多久后补跑已无意义则放弃
+#   market_open_only   只在 A股盘中连续竞价阶段执行(自动避开午休/周末/节假日)
+# ============================================================
+
+port: 8018
+auto_open_browser: true
+
+# 阶段四新闻相关性治理：LLM 深度研判最少间隔（分钟）。
+# 无强相关信号的周期 LLM 待机（行情/归档照常），强信号出现也不低于此间隔。
+llm_min_interval_min: 15
+
+jobs:
+
+  market_precheck:
+    trigger: "25 9 * * mon-fri"
+    builtin: precheck_briefing          # 开市预检 + 盘前简报推送(每日第一条)
+    catchup: true
+    skip_stale_minutes: 25              # 过了09:50补跑简报意义不大
+
+  intraday_cycle:
+    trigger: "*/5 9-14 * * mon-fri"
+    builtin: intraday_cycle             # 盘中每5分钟: 流水线全链 + 卖出监控 + 新闻归档
+    market_open_only: true
+    misfire_grace_minutes: 6
+
+  news_refresh:
+    trigger: "*/20 * * * *"
+    builtin: news_refresh               # 7x24新闻刷新（周末/盘后也拉快讯；盘中自动跳过由上行覆盖）
+    misfire_grace_minutes: 10
+
+  close_settlement:
+    trigger: "8 15 * * mon-fri"
+    builtin: close_settlement           # 收盘结算: 模拟盘终价复核 + 收盘简报推送
+    catchup: true
+    skip_stale_minutes: 240             # 当天忘跑, 数小时内补仍有意义
+
+  daily_review:
+    trigger: "30 16 * * mon-fri"
+    builtin: daily_review               # 全池日线增量落SQLite(断点续传) + 数据健康检查
+    catchup: false

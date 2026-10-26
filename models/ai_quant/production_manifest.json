@@ -1,0 +1,41 @@
+{
+  "manifest_version": "1.0.0",
+  "promotion_timestamp": "2026-09-10 10:45:00",
+  "environment": "production",
+  "execution_mode": "SHADOW",
+  "model": {
+    "model_name": "LightGBM LambdaMART Ranker",
+    "production_path": "models/ai_quant/lgb_ranker_AIQ-V1.0.txt",
+    "verified_alias_path": "models/ai_quant/lgb_ranker_PH12-VERIFIED.txt",
+    "source_phase12_artifact": "data/ai_quant_research/models/lgb_ranker_next_open.txt",
+    "sha256": "ae0580b9fb6efdea3d87698c61b7dc91e3fefc4dd270ce21d5117feb50954270",
+    "file_size_bytes": 60035,
+    "model_version": "PH12-LGB-OPEN (Promoted to AIQ-V1.0)",
+    "training_period": "20220101 ~ 20241224",
+    "sample_count": 69877,
+    "query_groups_count": 721,
+    "feature_count": 22,
+    "target_definition": "target_gross_ret_5d (HISTORICAL_NEXT_OPEN_PROXY)",
+    "rollback_artifact": "models/ai_quant/rollback/lgb_ranker_AIQ-V1.0.txt.bak",
+    "rollback_sha256": "0ef639e2e937421b2933e46f70ba7da8e38302221930b8a1ad73a8c78a7088c1"
+  },
+  "calibrator": {
+    "calibrator_name": "Platt Scaling Logistic Calibrator",
+    "production_path": "models/ai_quant/calibrator_AIQ-V1.0.pkl",
+    "verified_alias_path": "models/ai_quant/calibrator_PH12-VERIFIED.pkl",
+    "source_phase12_artifact": "data/ai_quant_research/models/calibrator_next_open.pkl",
+    "sha256": "8e6bbc3d27a155947d3b1df7bc1cd918f523dab960c081c9aa535ceba9931b9c",
+    "file_size_bytes": 879,
+    "fitting_dataset": "Validation (20250101 ~ 20251224)",
+    "fitting_sample_count": 23150,
+    "is_oos_used": false,
+    "rollback_artifact": "models/ai_quant/rollback/calibrator_AIQ-V1.0.pkl.bak",
+    "rollback_sha256": "a9fa300eff40a353a1e5db3269eb9458dd3b6433e1540f02cf475639ac7810ba"
+  },
+  "verification_proof": {
+    "model_bit_exact_match": true,
+    "calibrator_bit_exact_match": true,
+    "rollback_backup_verified": true
+  },
+  "public_release_note": "Model identity metadata from the original engineering artifact. Private training data, rollback backups, aliases and production acceptance evidence are not distributed. This file does not activate a season or certify this public preview."
+}

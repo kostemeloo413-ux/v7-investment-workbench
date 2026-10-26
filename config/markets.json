@@ -1,0 +1,9 @@
+{
+  "indices": [
+    { "symbol": "sh000001", "name": "上证指数", "market": "ashare" },
+    { "symbol": "sz399006", "name": "创业板指", "market": "ashare" },
+    { "symbol": "us.IXIC", "name": "纳斯达克综合指数", "market": "us" },
+    { "symbol": "us.INX", "name": "标普500指数", "market": "us" }
+  ],
+  "watchlist": []
+}

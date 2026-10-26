@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>V7 · 个人投资决策工作台</title>
+  <link rel="stylesheet" href="/workbench_v7/css/tokens.css">
+  <link rel="stylesheet" href="/workbench_v7/css/layout.css?v=fullscreen-layout-v2-1-r1">
+<link rel="stylesheet" href="/workbench_v7/css/arena.css?v=arena-grid-dialog-r1">
+</head>
+<body>
+  <header class="topbar" id="top-context-bar">
+    <a class="brand" href="#page-overview" aria-label="V7 今日总览"><span class="brand-mark">V7</span><span>个人投资决策工作台</span></a>
+    <div class="global-state" aria-live="polite">
+      <span class="state-pill neutral" id="global-season">赛季状态待确认</span>
+      <span class="state-pill neutral" id="global-mode">模拟模式待确认</span>
+      <span class="state-pill neutral" id="global-real">实盘交易状态待确认</span>
+    </div>
+    <button class="mobile-menu" id="mobile-menu" type="button" aria-label="打开导航">☰</button>
+  </header>
+
+  <div class="shell">
+    <aside class="sidebar" id="app-sidebar" aria-label="主导航">
+      <div class="sidebar-caption">工作域</div>
+      <nav class="nav-container">
+        <section class="nav-group">
+          <h2>01 今日总览</h2>
+          <button class="nav-item active" data-page="page-overview">总览</button>
+        </section>
+        <section class="nav-group">
+          <h2>02 市场</h2>
+          <button class="nav-item" data-page="page-market">市场环境</button>
+          <button class="nav-item" data-page="page-news">新闻快讯</button>
+        </section>
+        <section class="nav-group">
+          <h2>03 选股</h2>
+          <button class="nav-item" data-page="page-picks">今日选股</button>
+          <button class="nav-item" data-page="page-scoring">个股分析</button>
+        </section>
+        <section class="nav-group">
+          <h2>04 账户</h2>
+          <button class="nav-item" data-page="page-arena">竞技场</button>
+          <button class="nav-item" data-page="page-personal">个人持仓</button>
+        </section>
+        <section class="nav-group">
+          <h2>05 AI Quant</h2>
+          <button class="nav-item" data-page="page-ai-quant">今日AI策略</button>
+          <button class="nav-item" data-page="page-forward">实战跟踪</button>
+          <button class="nav-item" data-page="page-backtest">历史表现</button>
+        </section>
+        <section class="nav-group">
+          <h2>06 系统</h2>
+          <button class="nav-item" data-page="page-sources">数据源状态</button>
+          <button class="nav-item" data-page="page-llm">LLM配置</button>
+          <button class="nav-item" data-page="page-wecom">企业微信</button>
+          <button class="nav-item" data-page="page-health">系统健康</button>
+          <button class="nav-item" data-page="page-settings">基础设置</button>
+          <details class="nav-advanced" id="nav-advanced"><summary>高级信息</summary>
+            <button class="nav-item" data-page="page-data">数据中心</button>
+            <button class="nav-item" data-page="page-reports">报告审计</button>
+          </details>
+        </section>
+      </nav>
+      <div class="sidebar-foot">个人投资决策助手<br><span id="sidebar-real-status">实盘交易状态待确认</span></div>
+    </aside>
+
+    <main class="main-content">
+      <section class="page-view active" id="page-overview">
+        <div class="page-heading overview-heading">
+          <div><div class="eyebrow">V7 / 今日</div><h1>今日总览</h1><p>看市场、找机会，了解账户与策略。</p></div>
+        </div>
+        <div class="overview-status-note" role="status"><span id="overview-user-status">数据状态待确认</span><button class="text-link" id="overview-details-link" type="button">查看系统详情</button></div>
+
+        <section class="overview-layer" id="overview-market-layer" aria-labelledby="overview-market-heading" hidden>
+          <div class="layer-heading"><div><span class="layer-index">01</span><div><h2 id="overview-market-heading">市场环境</h2><p id="overview-market-time"></p></div></div><button class="text-link" data-page="page-market">查看市场环境 →</button></div>
+          <div id="overview-market-summary" class="card market-environment-summary" aria-live="polite"></div>
+        </section>
+
+        <section class="overview-layer" aria-labelledby="overview-opportunities-heading">
+          <div class="layer-heading"><div><span class="layer-index">02</span><div><h2 id="overview-opportunities-heading">今日机会</h2></div></div></div>
+          <article class="card overview-opportunities" id="overview-opportunities-card">
+            <div><div id="overview-picks-summary" aria-live="polite"><p>今日策略观点待确认</p></div><div id="overview-opinion-distribution" class="dashboard-opinions" hidden></div><button class="text-link" data-page="page-picks">查看今日选股 →</button></div>
+            <div id="overview-news-auxiliary"><h3>新闻关注</h3><div id="overview-news-summary" aria-live="polite"><p>新闻数据读取中</p></div><button class="text-link" data-page="page-news">查看更多新闻 →</button></div>
+          </article>
+        </section>
+
+        <section class="overview-layer" aria-labelledby="overview-accounts-heading">
+          <div class="layer-heading"><div><span class="layer-index">03</span><div><h2 id="overview-accounts-heading">账户与策略</h2><p>模拟账户与个人记录分开查看</p></div></div></div>
+          <div class="card-grid overview-account-grid">
+            <article class="card"><h3>六账户模拟赛</h3><p id="overview-account-count" class="overview-number">账户数据待确认</p><p id="overview-account-leader" class="muted">当前排名待确认</p><button class="text-link" data-page="page-arena">查看竞技场 →</button></article>
+            <article class="card"><h3>AI Quant</h3><p id="overview-aiq-positions" class="overview-number">持仓数据待确认</p><p id="overview-aiq-runtime" class="muted">当前运行状态待确认</p><button class="text-link" data-page="page-ai-quant">查看策略 →</button></article>
+            <article class="card"><h3>个人持仓</h3><p id="personal-overview-status" class="overview-number">本地记录读取中</p><p class="muted">独立的个人观察记录</p><button class="text-link" data-page="page-personal">管理个人持仓 →</button></article>
+            <article class="card"><h3>实战跟踪</h3><p id="overview-forward-day" class="overview-number">天数待确认</p><p class="muted">只累计已确认的真实观察日</p><button class="text-link" data-page="page-forward">查看跟踪 →</button></article>
+          </div>
+        </section>
+
+        <details class="technical-details overview-system-details" id="overview-system-details">
+          <summary>系统详情</summary>
+          <div class="overview-technical-facts">
+            <div class="fact-row"><span>Season ID / status</span><strong id="overview-season">UNKNOWN</strong></div>
+            <div class="fact-row"><span>View Model / generated_at</span><strong id="overview-generated">UNKNOWN</strong></div>
+            <div class="fact-row"><span>Forward Epoch / Day</span><strong id="overview-forward">UNKNOWN</strong></div>
+            <div class="fact-row"><span>G6</span><strong id="overview-g6">UNKNOWN</strong></div>
+            <div class="fact-row"><span>HALT</span><strong id="overview-halt">UNKNOWN</strong></div>
+            <div class="fact-row"><span>execution authorization / safety</span><strong id="overview-permissions">UNKNOWN</strong></div>
+            <div class="fact-row"><span>Business Health</span><strong id="overview-health">UNKNOWN</strong></div>
+            <div class="fact-row"><span>Forward state</span><strong id="global-forward">UNKNOWN</strong></div>
+            <div class="fact-row"><span>G6 state</span><strong id="global-g6">UNKNOWN</strong></div>
+            <p id="overview-aiq-summary" class="muted">AI Quant 今日数据待确认</p><p id="overview-arena-summary" class="muted">原账户摘要读取中</p>
+          </div>
+          <p class="muted">观点、计划、订单、成交与持仓分别记录。原始状态、时间、身份、数据来源与接口警告保留如下。</p>
+          <label class="overview-evidence-selector" for="overview-technical-source">原始证据来源
+            <select id="overview-technical-source"><option value="overview">总览与治理</option><option value="market">市场行情</option><option value="picks">策略观点</option><option value="news">新闻</option><option value="aiQuant">AI Quant 预测</option><option value="arena">模拟账户</option><option value="forward">Forward 跟踪</option><option value="personal">个人记录摘要</option></select>
+          </label>
+          <pre class="technical-json" id="overview-technical-json">接口原始状态读取中</pre>
+        </details>
+      </section>
+
+      <section class="page-view" id="page-market">
+        <div class="page-heading"><div><div class="eyebrow">02 / 市场</div><h1>市场环境</h1><p>了解主要指数表现与环境判断依据。</p></div></div>
+        <div id="market-environment-content" hidden aria-live="polite"><div id="market-index-grid"></div></div>
+        <details class="technical-details" id="market-environment-details"><summary>查看判断依据</summary><div id="market-environment-basis"></div><pre class="technical-json" id="market-technical-json"></pre></details>
+      </section>
+      <section class="page-view" id="page-news">
+        <div class="page-heading"><div><div class="eyebrow">02 / 市场</div><h1>新闻快讯</h1><p>真实 News Officer 保存内容；新闻原文与 AI 研判分开展示。</p></div><div class="heading-meta"><span id="news-page-status">读取中</span><span id="news-capture-time">采集批次：UNKNOWN</span></div></div>
+        <div id="news-page-warning" class="state-panel unavailable"><strong>NEWS_DATA_LOADING</strong><p>正在读取现有新闻文件，不会执行采集。</p></div>
+        <div class="card-grid two-col news-columns"><article class="card"><div class="card-heading"><h2>热点新闻</h2><span id="news-hot-count" class="status-chip neutral">0</span></div><div id="news-hot-list" class="news-list"></div></article><article class="card"><div class="card-heading"><h2>普通新闻</h2><span id="news-ordinary-count" class="status-chip neutral">0</span></div><div id="news-ordinary-list" class="news-list"></div></article></div>
+        <p class="data-source-note">新闻条目的 `time` 是来源记录时间；现有采集链未逐条保留可信时间来源证明，因此不宣称为已独立核验的发布时间。AI 研判仅在有模型元数据时单独标注。</p>
+      </section>
+      <section class="page-view" id="page-picks">
+        <div class="page-heading"><div><div class="eyebrow">03 / 选股</div><h1>今日选股</h1><p>看看五个策略今天关注什么。策略观点不代表订单或成交。不从历史 Top5 推导今日推荐。</p></div><div class="heading-meta"><span id="picks-page-status">读取中</span><span id="picks-as-of"></span></div></div>
+        <div id="picks-warning" class="state-panel unavailable" role="status"><strong>正在读取策略观点</strong><p></p></div>
+        <div id="picks-role-grid" class="card-grid picks-grid" aria-label="策略观点与 AI Quant 模型证据" aria-live="polite"><article id="picks-aiq-card" class="card aiq-card"><div class="card-heading"><div><span class="card-kicker">第六收益账户的模型证据</span><h2>AI Quant Top5</h2></div><span id="aiq-pulse-status" class="status-chip neutral">读取中</span></div><p id="aiq-pulse-meta" class="muted"></p><div id="aiq-top5-list" class="compact-list"></div></article></div>
+        <details id="picks-history" class="technical-details" hidden><summary>历史记录</summary><div id="picks-history-list"></div></details>
+        <article id="picks-risk-section" class="card sentinel-card" hidden><div class="card-heading"><h2>风险观察</h2><span class="muted">仅风险观察，不参与交易和排名。</span></div><div id="picks-sentinel"></div></article>
+        <details id="picks-technical-details" class="technical-details"><summary>技术详情</summary><pre id="picks-technical-json" class="technical-json"></pre></details>
+      </section>
+      <section class="page-view" id="page-scoring">
+        <div class="page-heading"><div><div class="eyebrow">03 / 选股</div><h1>个股分析</h1><p>输入股票代码，查看系统当前已有的策略、AI Quant、新闻与风险证据。</p></div></div>
+        <form id="stock-lookup-form" class="lookup-form" novalidate><label for="stock-code-input">股票代码</label><input id="stock-code-input" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" placeholder="例如 600519" required><button class="primary-button" type="submit">分析</button></form>
+        <div id="stock-detail-warning" class="state-panel unavailable"><strong>尚未选择股票</strong><p>输入股票代码开始查看。</p></div>
+        <div id="stock-detail" class="stock-detail" aria-live="polite"></div>
+      </section>
+      <section class="page-view" id="page-arena">
+        <div class="page-heading"><div><div class="eyebrow">04 / 账户</div><h1>竞技场</h1><p>六个模拟账户的真实账本表现</p></div><div class="heading-meta"><span id="arena-status">读取中</span><span id="arena-season">模拟账户</span><button type="button" id="arena-refresh" class="secondary-button">刷新数据</button></div></div>
+        <p id="arena-sync" class="arena-sync">页面同步：时间待确认 · 账户数据时间待确认</p>
+        <div id="arena-warning" class="state-panel unavailable"><strong>正在读取账户数据</strong><p>资金、持仓和交易记录将按已有账本展示。</p></div>
+        <h2 class="arena-ranking-title">模拟账户收益排名</h2><div class="arena-workspace"><div id="arena-grid" class="arena-leaderboard" aria-label="模拟账户收益排名"></div></div><dialog id="arena-detail-dialog" class="arena-detail-dialog" aria-modal="true" aria-labelledby="arena-dialog-title"><header class="arena-dialog-header"><h2 id="arena-dialog-title">账户详情</h2><button id="arena-dialog-close" class="arena-dialog-close" type="button" aria-label="关闭账户详情">关闭</button></header><div class="arena-dialog-content"><article id="arena-detail" class="card" aria-live="polite"></article></div></dialog>
+        <div class="sentinel-note">风险观察席 · 反指哨兵 · 无本金 · 不交易 · 不参与收益排名</div>
+      </section>
+      <section class="page-view" id="page-personal"><div class="page-heading"><div><div class="eyebrow">04 / 账户</div><h1>个人持仓</h1><p>独立浏览器本地数据；与 Arena、AI Quant Paper、模拟账本分离。</p></div><div class="heading-meta"><span id="personal-storage-status">本地存储读取中</span></div></div><div id="personal-warning" class="state-panel hold"><strong>PERSONAL_PORTFOLIO_LOCAL_ONLY</strong><p>这不是券商实时资产；无合格行情时当前价、市值、浮盈亏保持 UNKNOWN。清理浏览器数据可能丢失记录，请定期导出备份。</p></div><div class="personal-actions" id="personal-backup-actions"><button class="text-link" id="personal-export" type="button">导出本地备份</button><a class="text-link" id="personal-download-link" hidden>若未自动下载，点此保存备份</a><label class="text-link" for="personal-import-file">导入备份</label><input id="personal-import-file" type="file" accept="application/json,.json" hidden></div><form id="personal-holding-form" class="personal-form"><input id="personal-edit-index" type="hidden"><label>代码<input id="personal-symbol" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label><label>名称<input id="personal-name" maxlength="80" required></label><label>数量<input id="personal-shares" type="number" min="1" step="1" required></label><label>成本价<input id="personal-cost" type="number" min="0.01" step="0.01" required></label><label class="personal-notes">备注<input id="personal-notes" maxlength="300"></label><div class="personal-actions"><button class="primary-button" type="submit">保存个人记录</button><button class="text-link" id="personal-cancel-edit" type="button">取消编辑</button></div></form><div id="personal-holdings" class="card-grid two-col"></div></section>
+      <section class="page-view" id="page-ai-quant">
+        <div class="page-heading"><div><div class="eyebrow">05 / AI Quant</div><h1>今日AI策略</h1><p>查看今天的模型候选、计划记录与模拟账户实际状态。</p></div></div>
+        <div id="aiq-page-warning" class="state-panel hold" aria-live="polite"><strong>今日策略读取中</strong><p>只展示可靠的今日完整结果。</p></div>
+        <div id="aiq-page-rows" class="card-grid two-col"></div>
+        <p class="aiq-lifecycle-note">预测 ≠ 计划 ≠ 交易指令 ≠ 已成交 ≠ 持仓</p>
+        <details class="aiq-secondary"><summary>计划记录</summary><p class="muted">赛季归属暂未确认。这是计划，不代表已经下单或成交。</p><div id="aiq-plan-records" class="card-grid two-col"></div><button type="button" class="text-link" data-page="page-plans">查看完整计划记录 →</button></details>
+        <div id="aiq-paper-summary"></div>
+        <details class="technical-details"><summary>模型与技术信息</summary><pre id="aiq-model-information" class="technical-json">模型和预测证据读取中</pre></details>
+      </section>
+      <section class="page-view" id="page-forward">
+        <div class="page-heading"><div><div class="eyebrow">05 / AI Quant</div><h1>实战跟踪</h1><p>只跟踪当前赛季真正启动后的前向观察，不混入历史回放。</p></div></div>
+        <div class="state-panel hold" id="forward-state"><strong>真实前向观察状态读取中</strong><p>以当前赛季记录为准。</p></div>
+        <article class="card aiq-forward-progress" id="forward-summary"></article>
+        <div class="aiq-runtime-note" id="forward-runtime-note"></div>
+        <details class="technical-details"><summary>前向观察技术详情与完整记录</summary><pre class="technical-json" id="forward-technical-json">当前Forward API证据读取中</pre></details>
+      </section>
+      <section class="page-view" id="page-plans">
+        <div class="page-heading"><div><div class="eyebrow">05 / AI Quant · 完整记录</div><h1>计划记录</h1><p>预测、计划、交易指令、已成交和持仓是不同状态。</p></div><div class="heading-meta"><span id="plans-status">读取中</span></div></div>
+        <div id="plans-warning" class="state-panel hold"><strong>赛季归属暂未确认</strong><p>这是计划，不代表已经下单或成交。</p></div>
+        <button class="text-link" type="button" data-page="page-ai-quant">返回今日AI策略 →</button><div id="plans-list" class="card-grid two-col"></div>
+      </section>
+      <section class="page-view" id="page-backtest">
+        <div class="page-heading"><div><div class="eyebrow">05 / AI Quant</div><h1>历史表现</h1><p>分开查看历史样本外测试、历史模拟验证与风险局限。</p></div></div>
+        <section class="research-section card" aria-labelledby="research-oos-heading">
+          <div class="section-heading"><div><h2 id="research-oos-heading">样本外测试</h2><p>历史样本外研究 · 次日开盘价代理 · Top5信号的5日统计</p></div><button class="text-link" id="research-phase12-link" type="button">查看完整研究证据 →</button></div>
+          <div id="research-oos-metrics" class="aiq-history-facts"></div>
+        </section>
+        <section class="research-section card" aria-labelledby="research-replay-heading">
+          <div class="section-heading"><div><h2 id="research-replay-heading">历史模拟验证</h2><p>历史模拟回放</p></div><button class="text-link" id="research-phase18-link" type="button">查看完整审计证据 →</button></div>
+          <p id="research-classification-note" class="muted"></p><div id="research-replay-metrics" class="aiq-history-facts"></div>
+          <details class="aiq-secondary"><summary>交易摩擦与退出记录</summary><div id="research-replay-costs" class="aiq-history-facts"></div><div id="research-replay-exits"></div><p class="muted">模拟滑点已包含在成交价格中，不重复扣减。</p></details>
+        </section>
+        <section class="research-section card"><h2>风险与局限</h2><div id="research-limitations"></div></section>
+        <details class="technical-details"><summary>历史研究来源与技术信息</summary><pre id="history-technical-json" class="technical-json"></pre><details class="research-archive"><summary>完整历史报告入口</summary><div id="backtest-reports" class="card-grid two-col"></div></details><section id="research-report-viewer" class="report-viewer" hidden></section></details>
+      </section>
+      <section class="page-view" id="page-data"><div class="page-heading"><div><div class="eyebrow">06 / 系统 · 高级信息</div><h1>数据中心</h1><p>数据库与数据合同可观测性；API 在线不等同数据合格。</p></div><div class="heading-meta"><span id="data-center-status">读取中</span></div></div><div id="data-center-warning" class="state-panel unavailable"><strong>只读数据概况</strong><p>不得把未知统计填为零或 PASS。</p></div><div id="data-center-grid" class="card-grid two-col"></div></section>
+      <section class="page-view" id="page-reports">
+        <div class="page-heading"><div><div class="eyebrow">06 / 系统 · 高级信息</div><h1>报告与审计</h1><p>查看模型研究、风险、准入和系统验证的原始证据</p></div><div class="heading-meta"><span id="reports-count"></span></div></div>
+        <div class="state-panel unavailable" id="reports-warning"><strong>白名单报告目录</strong><p>列表只呈现报告元数据；报告状态和结论以正文原文为准。</p></div>
+        <div class="report-filter-bar" id="report-filters" role="group" aria-label="报告类别筛选"></div>
+        <div id="reports-list" class="card-grid two-col report-list"></div>
+        <section id="report-viewer" class="report-viewer" hidden></section>
+      </section>
+      <section class="page-view" id="page-sources">
+        <div class="page-heading"><div><div class="eyebrow">06 / 系统</div><h1>数据源状态</h1><p>了解各类数据的用途、当前可用状态与尚待确认的事项。</p></div><div class="heading-meta"><span class="status-chip unavailable" id="sources-page-status">状态读取中</span></div></div>
+        <div id="sources-warning" class="state-panel unavailable"><strong>状态按当前接口动态展示</strong><p>信息不足时会标为需要确认；本页只读取状态，不切换数据源。</p></div>
+        <div id="sources-grid" class="card-grid three-col sources-grid" aria-live="polite"></div>
+      </section>
+      <section class="page-view" id="page-llm"><div class="page-heading"><div><div class="eyebrow">06 / 系统</div><h1>LLM配置</h1><p>只显示脱敏配置存在性；不提供密钥编辑。</p></div></div><div id="llm-warning" class="state-panel unavailable"><strong>读取本进程只读配置状态</strong><p>不会返回 Key、Token 或其片段。</p></div><div id="llm-grid" class="card-grid two-col"></div></section>
+      <section class="page-view" id="page-wecom"><div class="page-heading"><div><div class="eyebrow">06 / 系统</div><h1>企业微信</h1><p>仅查看脱敏配置和已持久化通知状态。</p></div></div><div id="wecom-warning" class="state-panel unavailable"><strong>通知配置只读</strong><p>Webhook secret 不会回显。</p></div><div id="wecom-grid" class="card-grid two-col"></div></section>
+      <section class="page-view" id="page-health"><div class="page-heading"><div><div class="eyebrow">06 / 系统</div><h1>系统健康</h1></div></div><div class="state-panel hold" id="system-health-state"><strong>业务健康读取中</strong><p>进程心跳只代表进程存活，不独立代表业务健康。</p></div></section>
+      <section class="page-view" id="page-settings"><div class="page-heading"><div><div class="eyebrow">06 / 系统</div><h1>基础设置</h1><p>仅当前浏览器的低风险展示偏好。</p></div></div><form id="display-settings" class="card settings-form"><label>界面密度<select id="setting-density"><option value="comfortable">舒适</option><option value="compact">紧凑</option></select></label><label>默认页面<select id="setting-home"><option value="page-overview">今日总览</option><option value="page-market">市场环境</option><option value="page-picks">今日选股</option></select></label><button class="primary-button" type="submit">保存本地偏好</button><p class="muted">不包含交易权限、Provider 凭证或安全合同设置。</p></form></section>
+
+      <footer class="page-footer"><span>V7 · 只读状态视图</span><span id="footer-source">状态与来源见系统详情</span><span>只读展示 · 不执行交易</span></footer>
+    </main>
+  </div>
+  <dialog id="pick-detail-drawer" class="pick-detail-drawer" aria-modal="true" aria-labelledby="pick-drawer-title" aria-describedby="pick-drawer-boundary">
+    <header class="pick-drawer-header"><h2 id="pick-drawer-title">策略详情</h2><button id="pick-drawer-close" class="secondary-button" type="button" aria-label="关闭策略详情" autofocus>关闭 ×</button></header>
+    <div id="pick-drawer-content" class="pick-drawer-content"></div>
+  </dialog>
+  <script src="/workbench_v7/js/api.js"></script>
+  <script src="/workbench_v7/js/personal_portfolio_store.js"></script>
+  <script src="/workbench_v7/js/app.js?v=fullscreen-layout-v2-1-r1"></script>
+<script src="/workbench_v7/js/arena.js?v=arena-grid-dialog-r1"></script>
+</body>
+</html>

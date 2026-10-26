@@ -1,0 +1,52 @@
+{
+  "bloggers": [
+    {
+      "slug": "liao-xiaoai",
+      "name": "廖小爱",
+      "platform": "generic",
+      "style": "价值投资/硬科技/仓位管理",
+      "version": "1.0.0",
+      "created_at": "2026-08-05"
+    },
+    {
+      "slug": "cool",
+      "name": "酷儿",
+      "platform": "抖音/小红书",
+      "style": "K线结构与假突破反转",
+      "version": "1.0.0",
+      "created_at": "2026-08-05"
+    },
+    {
+      "slug": "yintwentao",
+      "name": "殷文涛 (梵爹)",
+      "platform": "喜马拉雅",
+      "style": "三大阵营博弈 + 光/芯轮动抱团",
+      "version": "1.0.0",
+      "created_at": "2026-08-06"
+    },
+    {
+      "slug": "hanshu",
+      "name": "韩叔 (趣聊财经)",
+      "platform": "喜马拉雅",
+      "style": "先人一步潜伏错杀 + 绝活生命线做差价",
+      "version": "1.0.0",
+      "created_at": "2026-08-06"
+    },
+    {
+      "slug": "ai-alpha",
+      "name": "AI-Alpha (量化智脑)",
+      "platform": "AI量化引擎",
+      "style": "多因子动量共振 + 动态ATR风控",
+      "version": "1.0.0",
+      "created_at": "2026-08-06"
+    },
+    {
+      "slug": "anti-demo",
+      "name": "极短线情绪博主 (反指哨兵)",
+      "platform": "短线情绪监测",
+      "style": "高位极端亢奋监测 + 反向避险拦截",
+      "version": "1.0.0",
+      "created_at": "2026-08-06"
+    }
+  ]
+}

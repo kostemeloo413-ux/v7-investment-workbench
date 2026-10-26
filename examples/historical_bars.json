@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "symbol": "000001",
+  "name": "平安银行",
+  "provider": "BaoStock 0.9.4",
+  "source_documentation": "https://www.baostock.com/",
+  "price_basis": "UNADJUSTED",
+  "purpose": "Tiny historical market-fact fixture for hypothetical order replay; not a captured account or actual trade history.",
+  "bars": [
+    {
+      "trade_date": "20260828",
+      "open": 11.54,
+      "high": 11.68,
+      "low": 11.48,
+      "close": 11.65,
+      "source_row_sha256": "b76d223abae555303dbd98b3988a4961a9be10d2ba39fe8b987e35851a82b9b8"
+    },
+    {
+      "trade_date": "20260831",
+      "open": 11.64,
+      "high": 11.77,
+      "low": 11.62,
+      "close": 11.72,
+      "source_row_sha256": "5bbd92c3418d37b9d551f918ec48ba880d2726f4a678e5126db5f393e07f5d63"
+    },
+    {
+      "trade_date": "20260901",
+      "open": 11.68,
+      "high": 11.96,
+      "low": 11.65,
+      "close": 11.92,
+      "source_row_sha256": "30deb28a35a49130e9b66f217c3199f910d0cc0c85804698dc74daeb50b3b0d1"
+    }
+  ]
+}

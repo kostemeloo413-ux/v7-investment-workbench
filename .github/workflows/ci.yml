@@ -1,0 +1,37 @@
+name: Public preview checks
+
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+jobs:
+  privacy-and-preview:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+      - name: Check publication paths, personal identifiers and all Git objects
+        run: python -B tools/check_public_release.py --git
+      - name: Independently scan the complete Git history
+        shell: pwsh
+        run: |
+          $scanArchive = Join-Path $env:RUNNER_TEMP 'gitleaks_8.30.1_windows_x64.zip'
+          $scanDirectory = Join-Path $env:RUNNER_TEMP 'v7-gitleaks-8.30.1'
+          Invoke-WebRequest -Uri 'https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_windows_x64.zip' -OutFile $scanArchive
+          if ((Get-FileHash -LiteralPath $scanArchive -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'd29144deff3a68aa93ced33dddf84b7fdc26070add4aa0f4513094c8332afc4e') { throw 'Gitleaks archive checksum mismatch' }
+          Expand-Archive -LiteralPath $scanArchive -DestinationPath $scanDirectory
+          & (Join-Path $scanDirectory 'gitleaks.exe') git . --log-opts='--all --full-history' --redact=100 --ignore-gitleaks-allow --max-decode-depth=2 --max-archive-depth=2 --no-banner --no-color
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Install the supported preview test environment
+        run: python -m pip --isolated --disable-pip-version-check install --index-url https://pypi.org/simple -r requirements-dev.txt
+      - name: Run the supported offline checks
+        run: python -B -m pytest -q
+      - name: Check the historical hypothetical replay
+        run: python -B -m scripts.public_preview --check

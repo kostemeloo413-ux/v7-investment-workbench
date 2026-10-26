@@ -1,0 +1,8 @@
+-c constraints-preview.txt
+# Local read-only preview and core replay; Python 3.13 (64-bit).
+fastapi==0.141.1
+uvicorn==0.52.4
+python-dotenv==1.2.3
+tzdata==2026.3
+requests==2.34.2
+PyYAML==6.0.3

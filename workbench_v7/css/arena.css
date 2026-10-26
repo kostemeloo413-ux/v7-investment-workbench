@@ -1,0 +1,57 @@
+/* Scoped to the Arena; LIGHT_PROFESSIONAL, red gains and green losses. */
+#page-arena .arena-workspace{display:block}
+#page-arena .arena-leaderboard{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+#page-arena .arena-account{width:100%;text-align:left;display:grid;grid-template-columns:1fr auto;gap:8px;cursor:pointer;font:inherit;color:inherit;padding:16px}
+#page-arena .arena-account>span:not(.arena-return),#page-arena .arena-account>small{grid-column:1/-1}
+#page-arena .arena-account[aria-pressed="true"]{border-color:#2563eb;box-shadow:0 0 0 1px #2563eb}
+#page-arena .arena-account:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+#page-arena .arena-return{font-weight:700}
+#page-arena .arena-gain{color:#dc2626}
+#page-arena .arena-loss{color:#166534}
+#page-arena .arena-sync{font-size:12px;margin:10px 0 16px;color:#64748b}
+#page-arena #arena-detail{min-width:0;padding:24px}
+#page-arena .arena-summary .evidence-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+#page-arena .arena-summary .evidence-facts>div{display:block;padding:8px 0}
+#page-arena .arena-summary dt{font-size:12px;color:#64748b}
+#page-arena .arena-summary dd{margin:6px 0 0;font-weight:600}
+#page-arena .arena-tabs{display:flex;gap:24px;border-bottom:1px solid #e2e8f0;margin:20px 0 16px}
+#page-arena .arena-tab{background:none;border:0;border-bottom:2px solid transparent;padding:12px 0;color:#64748b;cursor:pointer;font:inherit}
+#page-arena .arena-tab[aria-selected="true"]{color:#1d4ed8;border-color:#2563eb;font-weight:600}
+#page-arena .arena-table-scroll{max-height:600px;overflow:auto;border:1px solid #e2e8f0;border-radius:8px}
+#page-arena .arena-table{border-collapse:collapse;width:100%;min-width:850px;font-size:12px}
+#page-arena .arena-table th{background:#f8fafc;position:sticky;top:0;text-align:left;z-index:1}
+#page-arena .arena-table th,#page-arena .arena-table td{padding:12px 14px;border-bottom:1px solid #e2e8f0;vertical-align:top;white-space:nowrap}
+#page-arena .arena-table small{display:block;font-size:11px;margin-top:4px}
+#page-arena .arena-reason{white-space:normal;min-width:210px;max-width:300px;overflow-wrap:anywhere}
+#page-arena .arena-empty{padding:24px;background:#f8fafc;border-radius:8px;color:#64748b}
+/* The shared footer displays request time elsewhere; Arena supplies its own data-source time. */
+body:has(#page-arena.active) #footer-source{display:none}
+@media(max-width:1100px){#page-arena .arena-workspace{grid-template-columns:1fr}#page-arena .arena-leaderboard{grid-template-columns:repeat(2,minmax(0,1fr))}#page-arena .arena-summary .evidence-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){#page-arena .arena-leaderboard{grid-template-columns:1fr}#page-arena #arena-detail{padding:16px}}
+
+/* Phase 5: Arena wording and evidence layers only. */
+#page-arena .arena-ranking-title{font-size:16px;margin:24px 0 14px}
+#page-arena .arena-account>strong{min-width:0;overflow-wrap:anywhere}
+#page-arena .arena-account>small,#page-arena .arena-account>span:not(.arena-return){grid-column:1/-1}
+#page-arena .arena-summary dd{overflow-wrap:anywhere}
+#page-arena .arena-table-scroll{max-width:100%;min-width:0}
+#page-arena .arena-workspace,#page-arena .arena-leaderboard,#page-arena .arena-account{min-width:0}
+#page-arena .arena-technical{margin-top:24px;min-width:0}
+#page-arena .arena-technical pre,#page-arena .arena-transaction-details pre{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
+#page-arena .arena-transaction-details{margin-top:10px}
+#page-arena .arena-transaction-details summary{cursor:pointer;color:#64748b;font-size:11px}
+#page-arena .arena-transaction-details pre{max-height:260px;overflow:auto}
+#page-arena #arena-warning[hidden]{display:none}
+#page-arena .heading-meta{min-width:0;flex-wrap:wrap}
+#page-arena .arena-sync{overflow-wrap:anywhere;line-height:1.7}
+
+/* Account summaries stay on the page; existing ledger details open in a dialog. */
+#page-arena .arena-detail-dialog{width:min(1100px,calc(100vw - 48px));max-width:calc(100vw - 48px);max-height:calc(100vh - 48px);max-height:calc(100dvh - 48px);padding:0;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);overflow:hidden}
+#page-arena .arena-detail-dialog[open]{display:flex;flex-direction:column}
+#page-arena .arena-detail-dialog::backdrop{background:rgba(17,24,39,.28)}
+#page-arena .arena-dialog-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none;padding:16px 24px;border-bottom:1px solid var(--border)}
+#page-arena .arena-dialog-header h2{margin:0;font-size:18px}
+#page-arena .arena-dialog-close{min-height:44px;padding:8px 14px;border:1px solid var(--border);border-radius:6px;background:var(--surface);cursor:pointer}
+#page-arena .arena-dialog-content{flex:1;min-height:0;min-width:0;overflow-y:auto;overscroll-behavior:contain}
+#page-arena .arena-detail-dialog #arena-detail{border:0;border-radius:0;box-shadow:none}
+@media(max-width:700px){#page-arena .arena-detail-dialog{width:calc(100vw - 20px);max-width:calc(100vw - 20px);max-height:calc(100dvh - 20px)}#page-arena .arena-dialog-header{padding:12px 16px}#page-arena .arena-leaderboard{gap:16px}}

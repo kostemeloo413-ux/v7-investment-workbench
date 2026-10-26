@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "policy": "Exact path + rule + matched-byte fingerprint only. Never waive a whole directory, file or rule. New matches require explicit review.",
+  "fixtures": [
+    {
+      "path": "tests/datasource/test_market_data_service.py",
+      "rule": "credential-literal",
+      "match_sha256": "35eac3bd1f3ebaa6a39df97d4b30c02f5683a79454e86b44c6b84e974ca9efb0",
+      "reason": "Explicit offline-only redaction/rejection fixture; reviewed literal, not a usable credential."
+    },
+    {
+      "path": "tests/datasource/test_market_data_service.py",
+      "rule": "credential-literal",
+      "match_sha256": "16dc162bce9d77e84c1f95d8e09088e7df7b4b845738adef929b086fced202c0",
+      "reason": "Explicit offline-only redaction/rejection fixture; reviewed literal, not a usable credential."
+    },
+    {
+      "path": "tests/datasource/test_provider_adapters.py",
+      "rule": "credential-literal",
+      "match_sha256": "0964f93b9f838e8d9fb2627c7d184b8838b32f00a89f48d276731818ca4b1e2e",
+      "reason": "Explicit offline-only redaction/rejection fixture; reviewed literal, not a usable credential."
+    },
+    {
+      "path": "tests/datasource/test_provider_adapters.py",
+      "rule": "credential-literal",
+      "match_sha256": "ff58a6329bea19e690b2e6c31590757e5450d05d26141a9f107ace45b3615a64",
+      "reason": "Explicit offline-only redaction/rejection fixture; reviewed literal, not a usable credential."
+    },
+    {
+      "path": "tests/datasource/test_provider_adapters.py",
+      "rule": "credential-literal",
+      "match_sha256": "a031610dfa2fee97f086a6acbb3aa85463900fbbba4e1e1d61dcc9a29a8e02ec",
+      "reason": "Explicit offline-only redaction/rejection fixture; reviewed literal, not a usable credential."
+    },
+    {
+      "path": "tests/test_public_preview.py",
+      "rule": "credential-literal",
+      "match_sha256": "ff55f3fd841e3c48bcedcbdc60ae25a7bdc01d5bc843de153c9b5ca4a288db02",
+      "reason": "Explicit offline-only redaction/rejection fixture; reviewed literal, not a usable credential."
+    },
+    {
+      "path": "tests/v7_api/test_v7_gate_a_epic.py",
+      "rule": "credential-literal",
+      "match_sha256": "283492cb19a6b5668f486dd8b62a6282507390461e6b0ac6f8a66b1637c84752",
+      "reason": "Explicit offline-only redaction/rejection fixture; reviewed literal, not a usable credential."
+    },
+    {
+      "path": "tests/v7_api/test_v7_market_news.py",
+      "rule": "credential-url",
+      "match_sha256": "ed1b73c96200d49448dc6b32b020d6b7ce462ef14a398a8196f17dd1de0e3660",
+      "reason": "Explicit offline-only redaction/rejection fixture; reviewed literal, not a usable credential."
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "project_name": "AI博主蒸馏交易分析工作台",
+  "version": "1.0.0",
+  "whisper_model": "base",
+  "timezone": "Asia/Shanghai",
+  "markets_supported": ["ashare", "us", "hk"],
+  "min_sample_size_for_ic": 30
+}

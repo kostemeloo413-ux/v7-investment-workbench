@@ -1,0 +1,31 @@
+/* V7 LIGHT_PROFESSIONAL visual tokens — UI A1 */
+:root {
+  color-scheme: light;
+  --page: #f5f7fa;
+  --surface: #ffffff;
+  --surface-subtle: #f8fafc;
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+  --text: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --text-disabled: #9ca3af;
+  --accent: #2563eb;
+  --accent-soft: #eff6ff;
+  --up: #dc2626;
+  --up-soft: #fef2f2;
+  --down: #166534;
+  --down-soft: #f0fdf4;
+  --critical: #991b1b;
+  --critical-soft: #fef2f2;
+  --warning: #92400e;
+  --warning-soft: #fffbeb;
+  --hold: #7c2d12;
+  --hold-soft: #fff7ed;
+  --forward: #6d28d9;
+  --forward-soft: #f5f3ff;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(15, 23, 42, .04);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "Cascadia Code", "SF Mono", Consolas, monospace;
+}

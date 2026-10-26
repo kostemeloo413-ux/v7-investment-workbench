@@ -1,0 +1,8 @@
+# Optional legacy data/LLM/Windows desktop stack; not a live-season setup guide.
+-r requirements-quant.txt
+APScheduler==3.11.3
+openai==3.5.0
+akshare==1.18.94
+baostock==0.9.4
+pystray==0.19.5; sys_platform == "win32"
+Pillow==12.3.0
