@@ -71,7 +71,7 @@ def path_findings(path, content):
     if path in REVIEWED_BINARY:
         if digest(content) != REVIEWED_BINARY[path]:
             issues.append({'path': path, 'rule': 'binary-changed-requires-review'})
-    elif Path(path).suffix not in TEXT_SUFFIXES and path not in {'.gitignore', 'LICENSE', 'NOTICE'}:
+    elif Path(path).suffix not in TEXT_SUFFIXES and path not in {'.gitignore', '.gitattributes', 'LICENSE', 'NOTICE'}:
         issues.append({'path': path, 'rule': 'unreviewed-file-type'})
     if path == '.env.example':
         for number, line in enumerate(content.decode('utf-8').splitlines(), 1):

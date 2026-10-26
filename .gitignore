@@ -211,3 +211,4 @@
 
 # Exact reviewed privacy-fixture fingerprints.
 !/.public-privacy-fixtures.json
+!/.gitattributes
