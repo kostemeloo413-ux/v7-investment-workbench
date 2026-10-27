@@ -28,3 +28,5 @@ typing_extensions==4.16.0
 tzdata==2026.3
 urllib3==2.8.0
 uvicorn==0.52.4
+APScheduler==3.11.3
+tzlocal==5.4.5

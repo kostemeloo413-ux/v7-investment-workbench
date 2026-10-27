@@ -17,7 +17,7 @@ from typing import Any, Mapping
 from zoneinfo import ZoneInfo
 
 
-V2_SOURCE_SHA256 = "89b7e0a371ddacd64f52f667b5dbee452448a7120402272ff8388fafdcf6f67a"
+V2_SOURCE_SHA256 = "87c1337b269b796348a105c9da381cf1b861b9297cd025d831cb7bd4c1ee1453"
 G6_SOURCE_SHA256 = "7912c7a69bf9b187874b48be2c8d631b2b4db8c3720a080ee18750d0aa31ab97"
 BOARD_OVERRIDE_RECORD_SHA256 = "c8afa85f395a4c13f8ecef41cc9fd0842da8dbf6b38029ab7881a6c28754639c"
 MAX_BAOSTOCK_PROTOCOL_CALLS = 100
@@ -325,11 +325,15 @@ def build_v2_snapshot(capture: Mapping[str, Any], *, trade_date: str) -> dict[st
     snapshot["authoritative_board_overrides"] = [override_record]
     snapshot["capture_evidence_class"] = "REAL_PROVIDER_RESPONSE"
     snapshot["scope"] = str(snapshot["scope"]) + "; exact-code official board override is evidence-bound"
+    from datasource.listing_exclusions import resolve_official_terminations
+    resolve_official_terminations(snapshot, capture, target)
     snapshot.pop("snapshot_identity_sha256", None)
     snapshot["snapshot_identity_sha256"] = v2.canonical_json_sha256(snapshot)
     valid, reasons = v2.validate_full_roster_snapshot_v2(snapshot)
     if not valid or snapshot.get("snapshot_readiness") != "READY_CANDIDATE":
-        raise ActiveG6RouteHold("V2_SNAPSHOT_NOT_READY", details={"validation_reasons": reasons, "snapshot_readiness": snapshot.get("snapshot_readiness")})
+        raise ActiveG6RouteHold("V2_SNAPSHOT_NOT_READY", details={"validation_reasons": reasons,
+            "snapshot_readiness": snapshot.get("snapshot_readiness"),
+            "qualification_failure_counts": snapshot.get("qualification_failure_counts")})
     return snapshot
 
 

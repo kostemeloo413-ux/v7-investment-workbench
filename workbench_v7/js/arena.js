@@ -4,7 +4,7 @@
   const state = { selected: null, tab: 'positions', envelope: null, busy: false, lastSuccess: null, generation: 0 };
   // Context-specific display mappings; raw evidence remains in technical details.
   const display = {
-    accountStatus: value => ({ACTIVE:'运行中', HOLD:'当前受限', UNKNOWN:'状态待确认'}[value] || '状态待确认'),
+    accountStatus: value => ({ACTIVE:'运行中', HOLD:'当前受限', STRATEGY_DISABLED:'策略暂未启用', UNKNOWN:'状态待确认'}[value] || '状态待确认'),
     accountData: value => ({VERIFIED:'账户数据已核对', STALE:'账户数据已过期', UNKNOWN:'数据状态待确认'}[value] || '数据状态待确认'),
     projection: value => ({MATCH:'竞技场汇总一致', LAGGING:'竞技场汇总稍有延迟', UNKNOWN:'汇总核对待确认'}[value] || '汇总核对待确认'),
     quote: p => !p.price_source_time || p.price_time_status !== 'RECORDED' ? '报价时间待确认'
@@ -175,8 +175,11 @@
     this.setText('arena-season',finite(data.players_count)?data.players_count+' 个模拟账户':'账户数量待确认');
     this.setText('arena-sync','页面同步：'+time(state.lastSuccess)+' · '+display.snapshotLabel(freshness.source_time_kind)+'：'+time(freshness.source_updated_at));
     const needsAttention = freshness.stale === true || envelope.status !== 'OK' || (envelope.warnings || []).length > 0;
+    const health=data.execution_health || {}, aiq=health.aiq || {};
+    const entryMessage=health.new_entry_data_status==='HOLD'?'新开仓等待合格日线数据。':'';
+    const exitMessage=aiq.exit_check_status==='CHECKED'?'AIQ 最近已检查持仓退出。':aiq.exit_check_status==='PARTIAL_MISSING_QUOTES'?'AIQ 部分持仓报价缺失，等待有效报价。':'AIQ 退出检查状态待确认。';
     this.setPanel('arena-warning',freshness.stale?'hold':this.statusClass(envelope.status),freshness.freshness_status==='STALE'?'账户数据已过期':'部分账户数据需检查',
-      '请结合账户数据时间查看；原始状态与核对依据保留在账户技术信息。');
+      entryMessage+exitMessage+' 持仓估值请结合报价时间查看。');
     const warning=document.getElementById('arena-warning');if(warning)warning.hidden=!needsAttention;
     const grid=document.getElementById('arena-grid'); grid.replaceChildren();
     const players=data.leaderboard || []; if(!players.some(p=>p.player_id===state.selected)) state.selected=players.length ? players[0].player_id : null;

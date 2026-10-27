@@ -308,18 +308,27 @@ def publish_candidate(mp,pointer,expected_pointer_sha,qualification,g6_hashes):
  finally:
   if temp.exists():temp.unlink()
 
-def protocol_allowance(ledger,cutoff,max_calls,cumulative_limit,daily_operations):
+def approved_daily_protocol_limit(cutoff):
+ import yaml
+ with Path(rc.SCHEDULE_YAML).open(encoding='utf-8') as stream:policy=(yaml.safe_load(stream) or {}).get('data_recovery',{})
+ base=policy.get('factor_protocol_limit',20)
+ require(type(base) is int and 2<=base<=32,'ROLLOVER_DEFAULT_DAILY_LIMIT_INVALID')
+ limit=policy.get('factor_protocol_date_overrides',{}).get(cutoff,base)
+ require(type(limit) is int and 2<=limit<=40,'ROLLOVER_DATED_DAILY_LIMIT_INVALID')
+ return limit
+
+def protocol_allowance(ledger,cutoff,max_calls,cumulative_limit,daily_operations,daily_limit=20):
  base=len(ledger['requests'])
- require(1<=max_calls<=20 if daily_operations else 1<=max_calls<=44,'ROLLOVER_RUN_PROTOCOL_BUDGET_INVALID')
+ require(1<=max_calls<=daily_limit<=40 if daily_operations else 1<=max_calls<=44,'ROLLOVER_RUN_PROTOCOL_BUDGET_INVALID')
  if daily_operations:
   used=sum(c.get('trade_date')==cutoff for c in ledger['requests'])
-  remaining=min(max_calls,20-used)
+  remaining=min(max_calls,daily_limit-used)
   require(remaining>=2,'ROLLOVER_DAILY_PROTOCOL_BUDGET_EXHAUSTED')
   return base,remaining
  if cumulative_limit:require(356+base+max_calls<=cumulative_limit,'ROLLOVER_OWNER_TASK_PROTOCOL_BUDGET')
  return base,max_calls
 
-def collect_factors(work,cutoff,old,target,window,master,max_calls=20,cumulative_limit=400,daily_operations=False):
+def collect_factors(work,cutoff,old,target,window,master,max_calls=20,cumulative_limit=400,daily_operations=False,daily_protocol_limit=20):
  """Future completed-day explicit opt-in only. No retries. Count every frame."""
  import baostock as bs
  from datasource.baostock_transport import bounded_baostock_session
@@ -331,9 +340,13 @@ def collect_factors(work,cutoff,old,target,window,master,max_calls=20,cumulative
  checkpoint=read(checkpoint_path) if checkpoint_path.exists() else {}
  def reusable(path):
   key=Path(path).name
-  if not Path(path).exists():return None
-  require(key in checkpoint,'ROLLOVER_UNVERIFIED_EXISTING_STAGING')
-  e=checkpoint[key];evidence_rows(e);return e
+  if key in checkpoint:
+   e=checkpoint[key];evidence_rows(e);return e
+  if Path(path).exists():
+   # A crash between response write and checkpoint commit is never trusted.
+   # Retain its bytes, then recapture within the same cumulative request budget.
+   os.replace(path,Path(path).with_name(Path(path).name+'.unverified.'+uuid.uuid4().hex))
+  return None
  def planned(events):
   dated=factor_map(evidence_rows(events),cutoff)
   require(all(d==cutoff for c,d in dated),'ROLLOVER_NEW_FACTOR_DATE_MISMATCH')
@@ -351,14 +364,14 @@ def collect_factors(work,cutoff,old,target,window,master,max_calls=20,cumulative
  if existing:
   seeds,refresh,needed=planned(existing)
   if not needed:return existing,seeds,refresh
- base,remaining=protocol_allowance(ledger,cutoff,max_calls,cumulative_limit,daily_operations)
+ base,remaining=protocol_allowance(ledger,cutoff,max_calls,cumulative_limit,daily_operations,daily_protocol_limit)
  session=work/'sessions'/uuid.uuid4().hex;session.mkdir(parents=True,exist_ok=False)
  tap=None
  def flush():
   if tap is None:return
-  ledger['requests']=ledger['requests'][:base]+[dict(c,ordinal=base+c['ordinal'],inherited_task_ordinal=356+base+c['ordinal'],trade_date=cutoff,run=str(work),session=str(session),budget_mode='DAILY_OPERATIONS' if daily_operations else 'OWNER_IMPLEMENTATION') for c in tap.calls]
+  ledger['requests']=ledger['requests'][:base]+[dict(c,ordinal=base+c['ordinal'],inherited_task_ordinal=356+base+c['ordinal'],trade_date=cutoff,run=str(work),session=str(session),budget_mode='DAILY_OPERATIONS' if daily_operations else 'OWNER_IMPLEMENTATION',authorized_daily_limit=daily_protocol_limit if daily_operations else None) for c in tap.calls]
   ledger['inherited_requests']=356;ledger['total_with_inherited']=356+len(ledger['requests'])
-  ledger['daily_protocol_limit']=20;ledger['daily_counts']=dict(Counter(c.get('trade_date','LEGACY_UNDATED') for c in ledger['requests']))
+  ledger['daily_protocol_limit']=daily_protocol_limit;ledger['daily_counts']=dict(Counter(c.get('trade_date','LEGACY_UNDATED') for c in ledger['requests']))
   temp=ledger_path.with_suffix('.tmp');write(temp,ledger);os.replace(temp,ledger_path)
  def query(label,fn,path):
   with tap.operation(label):fields,rows,code,message=_consume(fn())
@@ -417,9 +430,19 @@ def run(args):
   target=set(snap['expected_codes']);master={r['code'].split('.')[-1]:r for r in evidence_rows(cap['stock_basic']) if r['type']=='1'}
   version='BAOSTOCK_QFQ_'+td+'_'+datetime.datetime.now(TZ).strftime('%Y%m%dT%H%M%S%f')
   work=Path(args.output_root)/('evidence_'+td+'_'+parent.manifest_sha256[:12]);work.mkdir(exist_ok=True)
+  # Read-only preflight event captures share the same request ledger. Reuse
+  # their exact verified response instead of spending another provider call.
+  forecast=Path(args.output_root)/('forecast_events_'+td)/'capture_checkpoint.json'
+  cp=work/'capture_checkpoint.json';saved=read(cp) if cp.exists() else {}
+  if 'new_date_factors.json' not in saved and forecast.exists():
+   item=read(forecast)['new_date_factors.json'];rows=evidence_rows(item)
+   require(all(day==td for code,day in factor_map(rows,td)),'ROLLOVER_FORECAST_DATE_MISMATCH')
+   saved['new_date_factors.json']=dict(item,reused_checkpoint=str(forecast));write(cp,saved)
   expected=file_sha(POINTER)
   if args.collect_factors:
-   events,seeds,refresh=collect_factors(work,td,m,target,window,master,args.max_protocol_calls,args.cumulative_protocol_limit,getattr(args,'daily_operations',False))
+   if getattr(args,'daily_operations',False):
+    require(getattr(args,'daily_protocol_limit',20)<=approved_daily_protocol_limit(td),'ROLLOVER_DAILY_LIMIT_NOT_APPROVED')
+   events,seeds,refresh=collect_factors(work,td,m,target,window,master,args.max_protocol_calls,args.cumulative_protocol_limit,getattr(args,'daily_operations',False),getattr(args,'daily_protocol_limit',20))
   else:
    require(args.factor_bundle is not None,'ROLLOVER_OFFICIAL_FACTOR_BUNDLE_REQUIRED')
    bundle=read(args.factor_bundle);events=bundle['date_event_evidence'];seeds=bundle['seed_evidence'];refresh=set(bundle['refresh_codes'])
@@ -445,6 +468,7 @@ def main():
  p.add_argument('--factor-bundle',type=Path);p.add_argument('--collect-factors',action='store_true')
  p.add_argument('--max-protocol-calls',type=int,default=20);p.add_argument('--publish',action='store_true')
  p.add_argument('--daily-operations',action='store_true',help='Approved day-end quota:20 cumulative protocol requests per target date, across all runs; historical356 ledger retained.')
+ p.add_argument('--daily-protocol-limit',type=int,default=20,help='Explicit configured operational ceiling, at most40 for dated exceptions; all prior requests still count. Default20.')
  p.add_argument('--cumulative-protocol-limit',type=int,default=400,
                 help='Current owner task cap400; future approved operational quota may specify another cap or0 (per-run cap still applies). Never resets request ledger.')
  a=p.parse_args()

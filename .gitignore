@@ -212,3 +212,12 @@
 # Exact reviewed privacy-fixture fingerprints.
 !/.public-privacy-fixtures.json
 !/.gitattributes
+
+# Reviewed trading-recovery patch and isolated regression tests.
+!/scripts/datasource/daily_recovery.py
+!/scripts/datasource/universe_trust_boundary.py
+!/scripts/datasource/listing_exclusions.py
+!/tests/datasource/test_daily_recovery.py
+!/tests/datasource/test_forward_exit_independence.py
+!/tests/datasource/test_recovery_runtime.py
+!/docs/TRADING_RECOVERY.md

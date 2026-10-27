@@ -159,9 +159,15 @@ def build_arena_view(context, now=None, participant_id=None, offset=0, limit=20)
     # Only already saved provenance is used; no network quote retrieval in this view.
     telemetry = Path(context['forward_root'])/'telemetry'/f'forward_telemetry_{now:%Y%m%d}.jsonl'
     records = reader.read(telemetry, list, jsonl=True, required=False)
-    if records:
-        quote_evidence = records[-1].get('quote_evidence', {})
+    latest_cycle = records[-1] if records else reader.read(telemetry.parent/'latest.json', required=False)
+    if latest_cycle:
+        quote_evidence = latest_cycle.get('quote_evidence', {})
         if not isinstance(quote_evidence, dict): quote_evidence = {}
+    execution_health = arena_execution_health(context, now, latest_cycle)
+    if execution_health['new_entry_data_status'] != 'ADMITTED':
+        reader.warnings.append('ENTRY_DATA_HOLD: '+execution_health['new_entry_reason'])
+    if (latest_cycle or {}).get('execution_status') not in (None, 'SUCCESS'):
+        reader.warnings.append('AIQ_CYCLE: '+str(latest_cycle.get('execution_status')))
     players = []
     for participant in roster:
         if not participant.get('return_bearing') or not participant.get('ranking_enabled'):
@@ -210,6 +216,17 @@ def build_arena_view(context, now=None, participant_id=None, offset=0, limit=20)
             'ledger_updated_at': ledger_at, 'ledger_time_kind': 'RECORDED_UPDATED_AT' if valid and timestamp(account.get('updated_at')) else 'FILE_MODIFIED_AT',
             'transactions': history[:20] if history is not None else None,
             'transactions_total': len(history) if history is not None else None}
+        item['valuation_status'] = ('CURRENT_VERIFIED' if not pos or all(p['quote_freshness']=='FRESH' for p in pos)
+                                    else 'STALE_OR_UNKNOWN_MARK') if valid else 'UNKNOWN'
+        if item['valuation_status'] == 'STALE_OR_UNKNOWN_MARK':
+            reader.warnings.append(pid+': POSITION_MARK_STALE_OR_UNKNOWN')
+        if aiq:
+            item['execution_health'] = execution_health['aiq']
+        if pid in ('P-HANSHU','P-COOL'):
+            item['strategy_status'] = 'DISABLED_PENDING_RULE_DEFINITION'
+            item['strategy_reason'] = '规则口径待统一，证据接入未完成，当前不启用新开仓。'
+            if item['status'] == 'ACTIVE':
+                item['status'] = 'STRATEGY_DISABLED'
         if pid == participant_id and history is not None:
             item['transactions'] = history[offset:offset+limit]; item['offset'] = offset
             item['has_more'] = offset+limit < len(history)
@@ -237,14 +254,33 @@ def build_arena_view(context, now=None, participant_id=None, offset=0, limit=20)
         'source_age_seconds': round(age,1) if age is not None else None,
         'freshness_status': 'UNKNOWN' if age is None else ('STALE' if stale else 'FRESH'), 'stale': stale}
     for row in players:
-        row['stale'] = stale
-        if stale and row['data_status'] == 'VERIFIED': row['data_status'] = 'STALE'
+        row['stale'] = stale or row.get('valuation_status') == 'STALE_OR_UNKNOWN_MARK'
+        if row['stale'] and row['data_status'] == 'VERIFIED': row['data_status'] = 'STALE'
     data = {'view_version': VERSION, 'season_id': sid, 'primary_metric': 'NET_PNL_PERCENT',
         'players_count': len(players), 'leaderboard': players, 'governance': {k:(safety or {}).get(k) for k in
             ('trading_enabled','execution_state_safe','new_entry_disabled','risk_exit_enabled','real_trading')},
         'comparability_warning': '按正式账本收益率排序；竞技场投影单独核对。反指哨兵不参与排名。',
+        'execution_health': execution_health,
         'source_evidence': reader.sources, 'sentinel': {'ranking_enabled': False, 'trading_account': False}}
     if participant_id:
         data = next((row for row in players if row['player_id'] == participant_id), None)
     return {'schema_version': 'v7.1', 'generated_at': now.isoformat(), 'status': 'OK' if stable and not reader.warnings and not stale else 'DEGRADED',
         'warnings': reader.warnings, 'data_freshness': freshness, 'data': data}
+
+
+def arena_execution_health(context, now, latest_cycle):
+    """Observe entry admission separately from process and snapshot liveness."""
+    try:
+        from competition.data_admission import latest_completed_data_admission
+        allowed, reason = latest_completed_data_admission(context, now)
+    except Exception as exc:
+        allowed, reason = False, 'DATA_ADMISSION_UNAVAILABLE:'+type(exc).__name__
+    cycle = latest_cycle or {}
+    at = timestamp(cycle.get('timestamp'))
+    age = (now-at).total_seconds() if at else None
+    return {'new_entry_data_status': 'ADMITTED' if allowed else 'HOLD',
+        'new_entry_reason': reason,
+        'aiq': {**{k:cycle.get(k) for k in ('timestamp','execution_status','entry_status',
+            'entry_reason','exit_check_status','history_cutoff','market_value_status')},
+            'cycle_age_seconds': round(age,1) if age is not None else None,
+            'cycle_freshness': 'UNKNOWN' if age is None else ('FRESH' if 0<=age<=600 else 'STALE')}}

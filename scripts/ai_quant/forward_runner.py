@@ -28,12 +28,7 @@ for _p in (_BASE, os.path.join(_BASE, 'scripts')):
 
 import runtime_config as rc
 from datasource import db as hdb
-from ai_quant.ranking import Top5RankingEngine
-from ai_quant.decision import AIQuantDecisionEngine
-from ai_quant.trade_plan import TradePlanEngine
-from ai_quant.predict import AIQuantPredictor
 from ai_quant.paper_executor import PaperExecutionEngine
-from ai_quant.universe import eligible_universe
 from ai_quant.forward_start_gate import (
     evaluate_forward_start_gate,
     resolve_forward_root,
@@ -65,11 +60,69 @@ class ForwardPaperRunner:
             governance_safety_path=context['governance_safety_path'],
             context=context,
         )
-        self.predictor = AIQuantPredictor()
-        self.ranking_engine = Top5RankingEngine(predictor=self.predictor, persist_predictions=persist_analysis)
-        self.decision_engine = AIQuantDecisionEngine(max_positions=3)
-        self.plan_engine = TradePlanEngine(default_competition_id=self.epoch_id,
-                                          initialize_schema=False, persist_plans=persist_analysis)
+        # Entry research must never be a constructor dependency of risk exits.
+        self.persist_analysis = persist_analysis
+        self.predictor = self.ranking_engine = None
+        self.decision_engine = self.plan_engine = None
+
+    def _initialize_entry(self):
+        if self.ranking_engine is None:
+            from ai_quant.ranking import Top5RankingEngine
+            self.ranking_engine = Top5RankingEngine(persist_predictions=self.persist_analysis)
+            self.predictor = self.ranking_engine.predictor
+        if self.decision_engine is None:
+            from ai_quant.decision import AIQuantDecisionEngine
+            self.decision_engine = AIQuantDecisionEngine(max_positions=3)
+        if self.plan_engine is None:
+            from ai_quant.trade_plan import TradePlanEngine
+            self.plan_engine = TradePlanEngine(default_competition_id=self.epoch_id,
+                                              initialize_schema=False,
+                                              persist_plans=self.persist_analysis)
+
+    def _mark_snapshot(self, quotes_map, telemetry):
+        marked = self.engine.refresh_market_value(quotes_map)
+        telemetry['market_value_status'] = ('CURRENT_VERIFIED' if marked
+                                           else 'STALE_PRESERVED_NO_PRICE_SUBSTITUTE')
+        account = self.engine.account
+        telemetry['account_snapshot'] = {
+            'total_equity': account.total_equity, 'cash': account.cash,
+            'market_value': account.market_value, 'net_pnl': account.net_pnl,
+            'net_pnl_pct': account.net_pnl_pct, 'positions_count': len(account.positions),
+            'max_drawdown_pct': account.max_drawdown_pct,
+        }
+
+    def _refresh_holding_days(self, trade_date):
+        """Age from the canonical calendar, never from completed-bar availability."""
+        end = datetime.datetime.strptime(trade_date, '%Y%m%d').date()
+        ages = {}
+        for position in self.engine.account.positions:
+            try:
+                date = datetime.datetime.strptime(position['buy_date'].replace('-', ''), '%Y%m%d').date()
+            except (KeyError, TypeError, ValueError, AttributeError):
+                ages[position['symbol']] = 'UNKNOWN_INVALID_BUY_DATE'
+                continue
+            if not 0 <= (end-date).days <= 3700:
+                ages[position['symbol']] = 'UNKNOWN_INVALID_BUY_DATE'
+                continue
+            count = 0
+            valid = True
+            while date < end:
+                date += datetime.timedelta(days=1)
+                try:
+                    calendar = rc.trading_calendar_status(date)
+                except Exception:
+                    valid = False
+                    break
+                if calendar.get('status') != 'VALID':
+                    valid = False
+                    break
+                count += int(calendar.get('trading_day') is True)
+            if valid:
+                position['holding_days'] = count
+                ages[position['symbol']] = count
+            else:
+                ages[position['symbol']] = 'UNKNOWN_CALENDAR'
+        return ages
 
     def run_5minute_cycle(self, as_of_date=None, quotes_provider=None, candidate_symbols=None):
         """
@@ -89,6 +142,8 @@ class ForwardPaperRunner:
             'order_time': None,
             'fill_time': None,
             'execution_status': 'SUCCESS',
+            'entry_status': 'NOT_EVALUATED',
+            'exit_check_status': 'NOT_EVALUATED',
             'execution_stats': {
                 'signal_count': 0,
                 'buy_decision_count': 0,
@@ -129,7 +184,6 @@ class ForwardPaperRunner:
                         or rc.market_phase(now) != 'open' or now.time().replace(tzinfo=None) <= datetime.time(9,30)):
                     telemetry['execution_status'] = 'HOLD_MARKET_SESSION'
                     return telemetry
-                self.ranking_engine.input_provider.validate_as_of(td)
                 self.engine.quote_provider = quotes_provider
                 quotes_map = quotes_provider.get('quotes_map', {})
                 daily_bars_map = quotes_provider.get('daily_bars_map', {})
@@ -158,7 +212,9 @@ class ForwardPaperRunner:
             order_t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             telemetry['order_time'] = order_t
 
+            telemetry['holding_trading_days'] = self._refresh_holding_days(td)
             exited, ambig = self.engine.monitor_and_execute_exits(quotes_map, td, daily_bars_map=daily_bars_map)
+            telemetry['exit_check_status'] = 'CHECKED'
             telemetry['exits'] = [
                 {
                     'symbol': p['symbol'],
@@ -167,8 +223,12 @@ class ForwardPaperRunner:
                     'exit_status': p.get('exit_status', 'POSITION_CLOSED')
                 } for p in exited
             ]
+            telemetry['quote_evidence'] = quotes_provider.evidence
+            self._mark_snapshot(quotes_map, telemetry)
             if any(quotes_provider.valid_quote(p['symbol']) is None for p in self.engine.account.positions):
                 telemetry['execution_status'] = 'HOLD_POSITION_MARKET_INPUT_UNAVAILABLE'
+                telemetry['entry_status'] = 'BLOCKED_POSITION_QUOTES'
+                telemetry['exit_check_status'] = 'PARTIAL_MISSING_QUOTES'
                 return telemetry  # Existing exits ran safely; no new entry on stale portfolio values.
 
             # 统计平仓阻断情况
@@ -178,6 +238,18 @@ class ForwardPaperRunner:
                     if st in telemetry['execution_stats']['blocked_breakdown']:
                         telemetry['execution_stats']['blocked_breakdown'][st] += 1
                         telemetry['execution_stats']['blocked_order_count'] += 1
+
+            # History/model failures block entries only, after exits and marks.
+            try:
+                self._initialize_entry()
+                telemetry['history_cutoff'] = self.ranking_engine.input_provider.cutoff
+                self.ranking_engine.input_provider.validate_as_of(td)
+            except Exception as exc:
+                telemetry['execution_status'] = 'HOLD_ENTRY_INPUT'
+                telemetry['entry_status'] = 'BLOCKED_HISTORY_OR_MODEL'
+                telemetry['entry_reason'] = str(exc)
+                return telemetry
+            telemetry['entry_status'] = 'ADMITTED'
 
             # 3. 步骤 B：特征提取与 Top 5 排序 (Signal Time)
             sig_t = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -279,24 +351,20 @@ class ForwardPaperRunner:
                     telemetry['execution_stats']['blocked_breakdown']['STRATEGY_REJECTED'] += 1
 
             # 6. 刷新市值并记录账户快照
-            marked = self.engine.refresh_market_value(quotes_map)
-            telemetry['market_value_status'] = 'CURRENT_VERIFIED' if marked else 'STALE_PRESERVED_NO_PRICE_SUBSTITUTE'
-            self.engine.log_equity_snapshot(trade_date=td)
-
-            telemetry['account_snapshot'] = {
-                'total_equity': self.engine.account.total_equity,
-                'cash': self.engine.account.cash,
-                'market_value': self.engine.account.market_value,
-                'net_pnl': self.engine.account.net_pnl,
-                'net_pnl_pct': self.engine.account.net_pnl_pct,
-                'positions_count': len(self.engine.account.positions),
-                'max_drawdown_pct': self.engine.account.max_drawdown_pct
-            }
+            self._mark_snapshot(quotes_map, telemetry)
+            telemetry['entry_status'] = 'EVALUATED'
 
         except Exception as e:
             telemetry['execution_status'] = 'ERROR'
             telemetry['error_message'] = str(e)
         finally:
+            if telemetry['exit_check_status'] in ('CHECKED', 'PARTIAL_MISSING_QUOTES'):
+                # Persist one valuation observation even when research is stale.
+                try:
+                    self.engine.log_equity_snapshot(trade_date=td)
+                except Exception as exc:
+                    telemetry['execution_status'] = 'ERROR_EQUITY_PERSISTENCE'
+                    telemetry['error_message'] = str(exc)
             # Publish after all committed effects and marks, also on early
             # returns after a safe exit. Never project an interrupted ledger.
             if os.path.abspath(self.storage_dir) == os.path.abspath(self.context['ai_quant_paper_root']):
@@ -310,6 +378,8 @@ class ForwardPaperRunner:
             telemetry_file = os.path.join(self.telemetry_dir, f"forward_telemetry_{td}.jsonl")
             with open(telemetry_file, 'a', encoding='utf-8') as f:
                 f.write(json.dumps(telemetry, ensure_ascii=False) + '\n')
+            from datasource.completeness import atomic_json_write
+            atomic_json_write(os.path.join(self.telemetry_dir, 'latest.json'), telemetry)
 
         return telemetry
 
@@ -325,9 +395,13 @@ def execute_forward_paper_cycle(context=None, current_timestamp=None):
     status = res.get('execution_status', 'UNKNOWN')
     stats = res.get('execution_stats', {})
     acc = res.get('account_snapshot', {})
+    equity = acc.get('total_equity')
+    equity_text = f'{equity:,.0f}' if isinstance(equity, (int, float)) else 'UNKNOWN'
     return (f"AI-Quant(FORWARD_PAPER):{status}|Signal={stats.get('signal_count')}|"
             f"Filled={stats.get('filled_order_count')}|Blocked={stats.get('blocked_order_count')}|"
-            f"Equity={acc.get('total_equity', 0):,.0f}")
+            f"Exited={len(res.get('exits', []))}|"
+            f"ExitCheck={res.get('exit_check_status')}|Entry={res.get('entry_status')}|"
+            f"Reason={res.get('entry_reason', '')}|Equity={equity_text}")
 
 
 if __name__ == '__main__':

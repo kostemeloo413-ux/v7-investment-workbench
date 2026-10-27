@@ -4,6 +4,9 @@ testpaths = [
   "tests/test_public_privacy_gate.py",
   "tests/datasource/test_provider_adapters.py",
   "tests/datasource/test_market_data_service.py",
+  "tests/datasource/test_daily_recovery.py",
+  "tests/datasource/test_forward_exit_independence.py",
+  "tests/datasource/test_recovery_runtime.py",
 ]
 addopts = "-p no:cacheprovider"
 

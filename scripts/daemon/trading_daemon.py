@@ -357,12 +357,15 @@ def close_settlement():
 
 
 def daily_review():
-    from datasource.baostock_transport import daily_g6_lock, BaoStockTransportError
-    try:
-        with daily_g6_lock(os.path.join(rc.STATE_DIR, 'daily_g6.lock')):
-            return _daily_review()
-    except BaoStockTransportError as exc:
-        return {'status': 'HOLD', 'reason_codes': [str(exc)]}
+    return _daily_review()
+
+
+def daily_data_recovery():
+    """DATA_MUTATING only; current completed date, bounded and resumable."""
+    from datasource.daily_recovery import recover_backlog
+    result = recover_backlog()
+    write_heartbeat('daily_data_recovery:result', json.dumps(result, ensure_ascii=False))
+    return result
 
 
 def _update_aiq_cache_after_g6(context, trade_date, capture_root):
@@ -401,94 +404,14 @@ def _daily_review():
     G6 requires a date-frozen candidate universe and database revalidation;
     this data job must not treat a non-empty historical response as success.
     """
-    from datasource import providers as prov
     from datasource import db as history_db
-    from datasource.completeness import (
-        failure_record_path, load_universe_snapshot, persist_universe_snapshot,
-        universe_snapshot_path,
-    )
-    from datasource.active_g6_v2_route import (
-        ActiveG6RouteHold, _write_json, archive_legacy_artifact,
-        build_v2_snapshot, capture_target_date, prepare_g6_snapshot,
-    )
-    from competition.season_runtime import resolve_active_season_context
-
-    target_trade_date = rc.today_str().replace('-', '')
-    target_date_obj = datetime.datetime.strptime(target_trade_date, '%Y%m%d').date()
-    context = resolve_active_season_context()
-    if not rc.is_trading_day(target_date_obj):
-        health_path, health = _record_data_job_health(
-            context, target_trade_date,
-            {'status': 'HOLD', 'failure_reasons': ['NON_TRADING_DATE']},
-            ['NON_TRADING_DATE'],
-        )
-        return {'status': 'HOLD', 'reason_codes': ['NON_TRADING_DATE'],
-                'health_status_path': health_path, 'health': health}
-    completeness_root = os.path.join(context['season_root'], 'market_data_completeness')
-    evidence_root = os.path.join(completeness_root, 'provider_capture', target_trade_date)
-    try:
-        from datasource.baostock_transport import bounded_baostock_session
-        with bounded_baostock_session(wire_root=os.path.join(evidence_root, 'transport_raw')):
-            capture = capture_target_date(target_trade_date, evidence_root)
-        v2_snapshot = build_v2_snapshot(capture, trade_date=target_trade_date)
-        v2_snapshot_path = os.path.join(completeness_root, 'v2_universe_snapshots',
-                                        f'{target_trade_date}.json')
-        _write_json(v2_snapshot_path, v2_snapshot)
-        snapshot, codes = prepare_g6_snapshot(
-            v2_snapshot, trade_date=target_trade_date,
-            season_id=context['season_id'], completeness_root=completeness_root,
-        )
-    except ActiveG6RouteHold as exc:
-        failure_reasons = [exc.reason]
-        health_path, health = _record_data_job_health(
-            context, target_trade_date,
-            {'status': 'HOLD', 'failure_reasons': failure_reasons,
-             'active_universe_source': 'DATE_EFFECTIVE_UNIVERSE_V2',
-             'details': exc.details}, failure_reasons,
-        )
-        return {'status': 'HOLD', 'reason_codes': failure_reasons,
-                'health_status_path': health_path, 'health': health,
-                'active_universe_source': 'DATE_EFFECTIVE_UNIVERSE_V2'}
-    snapshot_path = universe_snapshot_path(completeness_root, target_trade_date)
-    evidence_file = os.path.join(completeness_root, f'{target_trade_date}.json')
-    failure_file = failure_record_path(completeness_root, target_trade_date)
-    if os.path.exists(snapshot_path):
-        existing = load_universe_snapshot(snapshot_path, target_trade_date)
-        if (existing.get('season_id') == context['season_id'] and
-                existing.get('universe_scope') == 'DATE_EFFECTIVE_UNIVERSE_V2' and
-                existing.get('expected_codes_sha256') == snapshot.get('expected_codes_sha256') and
-                existing.get('universe_sha256') == snapshot.get('universe_sha256')):
-            snapshot = existing
-        else:
-            archive_root = os.path.join(completeness_root, 'legacy_route_archive')
-            archive_legacy_artifact(
-                snapshot_path,
-                os.path.join(archive_root, 'universe_snapshots', f'{target_trade_date}.json'),
-            )
-            archive_legacy_artifact(
-                evidence_file,
-                os.path.join(archive_root, 'evidence', f'{target_trade_date}.json'),
-            )
-            failure_sha = archive_legacy_artifact(
-                failure_file,
-                os.path.join(archive_root, 'failure_records', f'{target_trade_date}.json'),
-            )
-            if failure_sha:
-                os.unlink(failure_file)
-            persist_universe_snapshot(snapshot_path, snapshot)
-    else:
-        persist_universe_snapshot(snapshot_path, snapshot)
-    res = prov.sync_universe_daily(
-        codes, batch_pause_sec=0.25, target_trade_date=target_trade_date,
-        completeness_root=completeness_root, universe_snapshot=snapshot,
-    )
-    if not isinstance(res, dict) or res.get('status') != 'PASS':
-        reason_codes = list((res or {}).get('failure_reasons') or []) if isinstance(res, dict) else []
-        health_path, health = _record_data_job_health(context, target_trade_date, res, reason_codes)
-        return {'status': 'HOLD', 'reason_codes': reason_codes or ['DAILY_MARKET_COMPLETENESS_HOLD'],
-                'health_status_path': health_path, 'health': health,
-                'completeness': res}
-    aiq_cache = _update_aiq_cache_after_g6(context, target_trade_date, evidence_root)
+    recovery = daily_data_recovery()
+    if recovery.get('status') != 'PASS':
+        return recovery
+    target_trade_date = recovery['target_date']
+    days = recovery.get('dates', [])
+    res = days[-1]['data'] if days else {'status': 'ALREADY_VALID'}
+    aiq_cache = days[-1]['aiq_cache'] if days else {'status': 'ALREADY_QUALIFIED_NO_WRITE'}
     n_stk, lo, hi = history_db.kline_coverage()
 
     # v4.1 A2：pos_neg_diff 挂 daily_review（防死数据）
@@ -581,6 +504,7 @@ BUILTINS = {
     'news_refresh': news_refresh,
     'close_settlement': close_settlement,
     'daily_review': daily_review,
+    'daily_data_recovery': daily_data_recovery,
 }
 
 # One policy table is the source of truth for every runtime entry point.  The
@@ -592,6 +516,7 @@ RUNTIME_JOB_POLICY = {
     'news_refresh': 'INFORMATIONAL',
     'close_settlement': 'ECONOMIC_MUTATING',
     'daily_review': 'DATA_MUTATING',
+    'daily_data_recovery': 'DATA_MUTATING',
 }
 
 MUTATING_RUNTIME_JOBS = {
@@ -1211,10 +1136,13 @@ def _record_resident_source_version(names):
                'daemon_source_path': os.path.abspath(__file__),
                'daemon_source_sha256': digest(__file__),
                'resident_function_digests': {f.__name__: _runtime_code_digest(f.__code__)
-                   for f in [_daily_review, _update_aiq_cache_after_g6, forward_runtime_branch]},
+                    for f in [_daily_review, daily_data_recovery, _update_aiq_cache_after_g6, forward_runtime_branch]},
                'modules': modules, 'registered_jobs': names,
                'forward_runner_imported_for_audit': False,
                'economic_jobs_called_for_audit': False}
+    receipt['data_recovery_sources'] = {
+        name: digest(os.path.join(_BASE, 'scripts', 'datasource', name + '.py'))
+        for name in ('daily_recovery', 'active_g6_v2_route', 'listing_exclusions', 'universe_trust_boundary')}
     atomic_json_write(os.path.join(rc.STATE_DIR, 'daemon_source_version.json'), receipt)
 
 
@@ -1284,6 +1212,11 @@ def main():
                         daemon=True).start()
         except Exception:
             continue
+
+    # Startup recovery is data-only, bounded, and shares the natural job lock.
+    # No historical economic task is replayed.
+    threading.Thread(target=lambda: execute_runtime_job(
+        'daily_data_recovery', source='startup:data_backlog'), daemon=True).start()
 
     write_heartbeat('daemon_boot', f'调度任务: {",".join(names)}')
     mark_alive()

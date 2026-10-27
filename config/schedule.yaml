@@ -14,6 +14,15 @@ auto_open_browser: true
 # 无强相关信号的周期 LLM 待机（行情/归档照常），强信号出现也不低于此间隔。
 llm_min_interval_min: 15
 
+# Owner approved 2026-10-27: bounded recovery factor ceiling; prior calls count.
+# Only required official factor queries are sent; capture has a separate budget.
+data_recovery:
+  factor_protocol_limit: 32
+  # Dated exceptions approved after the remaining event lists were checked.
+  factor_protocol_date_overrides:
+    "20261016": 40
+    "20261023": 40
+
 jobs:
 
   market_precheck:
@@ -43,3 +52,9 @@ jobs:
     trigger: "30 16 * * mon-fri"
     builtin: daily_review               # 全池日线增量落SQLite(断点续传) + 数据健康检查
     catchup: false
+
+  daily_data_retry:
+    trigger: "30 17,19 * * mon-fri"
+    builtin: daily_data_recovery         # 有限重试/逐日缺口恢复；不重放经济任务
+    catchup: false
+    misfire_grace_minutes: 10
