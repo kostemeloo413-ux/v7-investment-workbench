@@ -9,8 +9,6 @@
     projection: value => ({MATCH:'竞技场汇总一致', LAGGING:'竞技场汇总稍有延迟', UNKNOWN:'汇总核对待确认'}[value] || '汇总核对待确认'),
     quote: p => !p.price_source_time || p.price_time_status !== 'RECORDED' ? '报价时间待确认'
       : ({FRESH:'报价较新', STALE:'报价已过期', UNKNOWN:'报价时间待确认'}[p.quote_freshness] || '报价时间待确认'),
-    transaction: r => r.evidence_kind === 'FILL' ? '已成交'
-      : r.evidence_kind === 'ORDER_WITHOUT_FILL' && r.execution_status === 'T1_LOCKED' ? 'T+1锁定' : '状态待确认',
     ledgerLabel: value => ({RECORDED_UPDATED_AT:'账本更新时间', FILE_MODIFIED_AT:'账本文件更新时间'}[value] || '账本时间口径待确认'),
     snapshotLabel: value => ({SNAPSHOT_UPDATED_AT:'账户数据截至', FILE_MODIFIED_AT:'数据文件更新时间'}[value] || '账户数据时间口径待确认')
   };
@@ -90,24 +88,22 @@
   }
   function history(player, root) {
     if (!Array.isArray(player.transactions) || !finite(player.transactions_total)) { root.append(node('p','交易记录待确认。','arena-empty')); return; }
-    const records=player.transactions;
+    const records=player.transactions.filter(r=>r.evidence_kind==='FILL' && r.execution_status==='FILLED' && ['BUY','SELL'].includes(r.direction));
     if (!records.length && player.transactions_total === 0) {
-      root.append(node('p','暂无交易记录','arena-empty'));
-      root.append(node('p',player.orders_count === 0 ? '暂无交易指令' : player.orders_count == null ? '交易指令数据待确认' : '交易指令记录见账户技术信息。','muted')); return;
+      root.append(node('p','暂无成交记录','arena-empty')); return;
     }
-    root.append(node('p','已显示 '+records.length+' / '+known(player.transactions_total)+' 条记录 · 最新在前。交易指令与已成交分别标明。','muted'));
+    root.append(node('p','已显示 '+records.length+' / '+known(player.transactions_total)+' 条成交记录 · 最新在前。','muted'));
     const rows=records.map(r=>{
       const stock=document.createElement('div'); stock.append(node('strong',r.name || '名称未记录'),node('small',r.symbol,'muted'));
       const direction=node('span',({BUY:'买入',SELL:'卖出'}[r.direction] || '方向待确认')); direction.className=r.direction==='BUY'?'arena-gain':r.direction==='SELL'?'arena-loss':'';
       const reason=document.createElement('div'); reason.className='arena-reason'; reason.append(node('span',r.reason || '未记录交易原因'));
       const detail=document.createElement('details'); detail.className='arena-transaction-details';
       detail.append(node('summary','查看交易技术信息'),node('pre',JSON.stringify(r,null,2),'technical-json')); reason.append(detail);
-      const isFill=r.evidence_kind==='FILL';
-      return [direction,stock,time(r.timestamp),isFill?format(r.shares):'—',isFill?format(r.price):'—',isFill?money(r.fees):'—',display.transaction(r),reason];
+      return [direction,stock,time(r.timestamp),format(r.shares),format(r.price),money(r.fees),'已成交',reason];
     });
     root.append(table(['方向','证券','时间','成交股数','成交价','交易费用','状态','交易原因'],rows,'交易记录待确认。'));
     if (records.length < player.transactions_total) {
-      const more=button('查看更多历史记录',async()=>{
+      const more=button('查看更多成交记录',async()=>{
         more.disabled=true; const id=player.player_id; const gen=state.generation;
         const response=await read('/api/v7/arena/'+encodeURIComponent(id)+'?offset='+records.length+'&limit=20');
         if(gen!==state.generation || state.selected!==id) return;

@@ -98,6 +98,7 @@ def position_view(row, names, quote_evidence):
 
 
 def transactions(orders, fills, closed, names):
+    """Project successful buy/sell fills; unfilled orders stay in the audit ledger."""
     fill_map = {}
     for fill in fills:
         fill_map.setdefault(fill.get('order_id'), []).append(fill)
@@ -128,11 +129,10 @@ def transactions(orders, fills, closed, names):
         if linked:
             for fill in linked:
                 result.append(view(order, fill)); seen.add(fill.get('fill_id'))
-        else:
-            result.append(view(order))
     for fill in fills:
         if fill.get('fill_id') not in seen:
             result.append(view({'order_id': fill.get('order_id')}, fill))
+    result = [row for row in result if row['direction'] in ('BUY', 'SELL')]
     result.sort(key=lambda row: timestamp(row['timestamp']) or dt.datetime.min.replace(tzinfo=TZ), reverse=True)
     return result
 
