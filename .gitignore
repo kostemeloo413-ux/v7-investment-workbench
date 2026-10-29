@@ -251,3 +251,7 @@
 !/docs/API.md
 !/docs/VALIDATION.md
 !/docs/ROADMAP.md
+
+# Reviewed static documentation diagrams, pinned by the publication guard.
+!/docs/diagrams/research-workflow.svg
+!/docs/diagrams/system-architecture.svg

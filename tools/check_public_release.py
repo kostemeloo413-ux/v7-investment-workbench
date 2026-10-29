@@ -30,6 +30,8 @@ PRIVATE_ROOTS = {'.planning', '.workbuddy', '.zcode', 'private_audit', 'state', 
 PRIVATE_NAMES = {'PROJECT_MEMORY.md', 'AGENTS.md', 'llm_profiles.json', '.gitleaksignore'}
 TEXT_SUFFIXES = {'.py', '.md', '.txt', '.json', '.yaml', '.yml', '.toml', '.js', '.css', '.html', '.example'}
 REVIEWED_BINARY = {
+    'docs/diagrams/research-workflow.svg': '0edd2cfee6faa3c758d40af7fdd9a8936153e0446a350bbf0a1f63606ab3077f',
+    'docs/diagrams/system-architecture.svg': '6537d3ef1dce6b88589cff9d68f8bfe0eb7cbe321e8d8c3108217d3a51f73875',
     'docs/images/ui-v3-overview-nav.jpg': '87d1fac84cc019b47ae80e835da6b07231056872b50f61b46a958e287bab9ad3',
     'docs/images/ui-v3-news-nav.jpg': '73060cd3df0416e17076cc1bc39a584155551c2bf7e149a99f45f4a9cf08a98c',
     'docs/images/ui-v3-picks-nav.jpg': '8a611f50c9eb56dcb3fdedf6fc7f79fd053949db7d46f7e0d4cdaf6b38a20cf9',
