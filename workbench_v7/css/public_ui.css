@@ -1,15 +1,10 @@
 /* Only the public preview shell; the underlying v3-r3 components are unchanged. */
-:root { --public-notice-height:38px; }
-.public-preview-notice { position:fixed; inset:0 0 auto; z-index:100; min-height:var(--public-notice-height); display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 24px; background:#fff7e8; border-bottom:1px solid #eed39e; color:#70531e; font:12px/1.7 system-ui,sans-serif; }
+.public-preview-notice { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; padding:8px 16px; background:#fff7e8; border:1px solid #eed39e; border-radius:6px; color:#70531e; font:12px/1.7 system-ui,sans-serif; }
 .public-preview-notice strong { font-weight:600; }
 .public-preview-notice a { color:inherit; text-decoration:underline; text-underline-offset:3px; white-space:nowrap; }
 .public-preview-links { display:flex; gap:16px; flex:none; }
-.topbar { top:var(--public-notice-height); }
-.sidebar { top:calc(var(--topbar-height) + var(--public-notice-height)); height:calc(100vh - var(--topbar-height) - var(--public-notice-height)); }
-body { padding-top:var(--public-notice-height); }
 html[data-ui-demo="synthetic-v1"] dialog::before { content:"合成界面示例 · 非真实账户、行情或策略结果"; display:block; padding:10px 20px; color:#70531e; background:#fff7e8; border-bottom:1px solid #eed39e; font:12px/1.7 system-ui,sans-serif; }
 @media(max-width:760px) {
-  :root { --public-notice-height:84px; }
-  .public-preview-notice { padding:8px 14px; flex-wrap:wrap; gap:2px; align-content:center; }
+  .public-preview-notice { padding:8px 14px; flex-wrap:wrap; gap:6px; }
   .public-preview-notice>span { width:100%; }
 }

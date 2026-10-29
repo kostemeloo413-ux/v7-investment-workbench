@@ -26,14 +26,14 @@ V7 是一个持续迭代的个人 A 股研究与模拟交易项目，将行情�
 
 默认示例已经同步 **v3-r3 最新界面**，包含18页统一组件，以及首页高度与底部对齐、新闻提示清理、选股名称对齐的调整。截图来自公开演示入口，顶部“合成数据”标记始终可见；不包含个人工作台数据。
 
-![最新版首页：市场走势、策略观点与候选格](docs/images/ui-v3-overview.jpg)
+![最新版首页：市场走势、策略观点与候选格](docs/images/ui-v3-overview-nav.jpg)
 
 <details>
 <summary>查看新闻页和选股页</summary>
 
-![新闻页：清晰的来源、时间与正文阅读](docs/images/ui-v3-news.jpg)
+![新闻页：清晰的来源、时间与正文阅读](docs/images/ui-v3-news-nav.jpg)
 
-![选股页：股名、代码和观点对齐](docs/images/ui-v3-picks.jpg)
+![选股页：股名、代码和观点对齐](docs/images/ui-v3-picks-nav.jpg)
 
 </details>
 

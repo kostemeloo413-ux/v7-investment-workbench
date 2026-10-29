@@ -1,6 +1,7 @@
 """Regression checks for privacy gates, including exact fake-fixture exceptions."""
 import hashlib
 import importlib.util
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,7 +46,8 @@ def test_environment_template_requires_empty_sensitive_values():
 
 def test_reviewed_ui_screenshots_are_exactly_pinned_not_a_generic_image_allowance():
     images = {path: sha for path, sha in guard.REVIEWED_BINARY.items() if path.startswith('docs/images/')}
-    assert len(images) == 3
+    current_images = set(re.findall(r'\((docs/images/[^)]+)\)', (ROOT / 'README.md').read_text(encoding='utf-8')))
+    assert len(current_images) == 3 and current_images <= images.keys()
     for path, expected in images.items():
         body = (ROOT / path).read_bytes()
         assert body.startswith(b'\xff\xd8') and hashlib.sha256(body).hexdigest() == expected

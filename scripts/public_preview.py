@@ -74,8 +74,8 @@ def create_preview_app():
             label = '<strong>公开源码预览</strong>　未接入实时行情或实际账户'
             links = '<a href="/demo">查看新版界面示例</a><a href="/replay">查看历史撮合演示</a>'
         notice = '<aside class="public-preview-notice" role="note"><span>' + label + '</span><nav class="public-preview-links" aria-label="公开示例入口">' + links + '</nav></aside>'
-        page = page.replace('<body>', '<body>' + notice, 1)
-        return HTMLResponse(page.replace('</head>', '<link rel="stylesheet" href="/workbench_v7/css/public_ui.css?v=20261029-v3-r3"></head>', 1))
+        page = page.replace('<main class="main-content">', '<main class="main-content">' + notice, 1)
+        return HTMLResponse(page.replace('</head>', '<link rel="stylesheet" href="/workbench_v7/css/public_ui.css?v=20261029-nav-r1"></head>', 1))
 
     return app
 

@@ -25,4 +25,4 @@ Sources: [Gitleaks usage](https://github.com/gitleaks/gitleaks), [pinned release
 
 ## Reviewed UI screenshots
 
-The three JPEGs under `docs/images/ui-v3-*.jpg` are captured from the synthetic public UI, not the private workbench. Each was visually inspected and is pinned to its exact reviewed SHA256 in `REVIEWED_BINARY`. Changing an image requires a new review; no generic image or directory exemption is added. Real account/news/credential screenshots remain outside the release.
+The current README JPEGs and earlier reviewed versions under `docs/images/ui-v3-*.jpg` are captured from the synthetic public UI, not the private workbench. Each was visually inspected and is pinned to its exact reviewed SHA256 in `REVIEWED_BINARY`. Changing an image requires a new review; no generic image or directory exemption is added. Real account/news/credential screenshots remain outside the release.
