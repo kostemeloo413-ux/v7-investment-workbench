@@ -49,7 +49,8 @@
 
   async function read(url) {
     try {
-      const res = await fetch(url, {method:'GET', cache:'no-store', headers:{Accept:'application/json'}, signal:AbortSignal.timeout(12000)});
+      const endpoint = V7Api.baseUrl === '/api/ui-demo' ? url.replace(/^\/api\/v7(?=\/)/, '/api/ui-demo') : url;
+      const res = await fetch(endpoint, {method:'GET', cache:'no-store', headers:{Accept:'application/json'}, signal:AbortSignal.timeout(12000)});
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
     } catch (err) { return {status:'UNAVAILABLE', data:null, warnings:[err.message], data_freshness:{stale:true}}; }

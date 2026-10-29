@@ -1,0 +1,709 @@
+/* Hallmark app scope; shape: app screen; V7 account and research views use the locked shared design system. */
+/* Critique: separate evidence types through layout, keep ledger/forecast/Forward semantics explicit. */
+/* Hallmark · dismissed 3 · Three existing plan record previews share one data schema and equal columns without icon tiles; equal widths do not encode recommendation strength. */
+.account-page :is(button,a,input,select,summary,[role="button"]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.account-page button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.account-page :is(h1,h2,h3) {
+  text-wrap: balance;
+}
+:is(#page-arena,#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) {
+  min-width: 0;
+}
+:is(#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) > .state-panel {
+  margin-bottom: 20px;
+}
+:is(#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) .card {
+  border-radius: 10px;
+}
+.account-section-heading {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+.account-section-note {
+  margin: -4px 0 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.account-empty-message {
+  margin: 0;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.8;
+}
+:is(#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) .evidence-facts dt {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+:is(#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) .evidence-facts dd {
+  color: var(--text);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+:is(#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) .technical-details {
+  min-width: 0;
+  margin: 20px 0 0;
+}
+:is(#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) .technical-json {
+  max-width: 100%;
+  max-height: 420px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Manual local holdings: the editor remains separate from saved records and simulated ledgers. */
+#page-personal #personal-backup-actions {
+  justify-content: flex-end;
+  gap: 20px;
+  margin: 0 0 16px;
+}
+#page-personal #personal-backup-actions :is(button,a,label) {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+#page-personal .personal-workspace {
+  display: grid;
+  grid-template-columns: minmax(290px,.72fr) minmax(0,1.28fr);
+  gap: 24px;
+  align-items: start;
+}
+#page-personal .account-editor,
+#page-personal .account-personal-records {
+  min-width: 0;
+}
+#page-personal #personal-holding-form {
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 20px;
+  border-radius: 10px;
+}
+#page-personal #personal-holding-form label {
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
+}
+#page-personal #personal-holding-form input {
+  min-height: 44px;
+  padding: 8px 12px;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  border-color: var(--border-strong);
+}
+#page-personal #personal-holding-form .personal-notes {
+  grid-column: 1 / -1;
+}
+#page-personal #personal-holding-form .personal-actions {
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+#page-personal #personal-holdings {
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  gap: 16px;
+}
+#page-personal .personal-card {
+  padding: 20px;
+}
+#page-personal .personal-card h2 {
+  margin: 0 0 20px;
+  font-size: 16px;
+  font-weight: 600;
+}
+#page-personal .personal-card .evidence-facts {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 20px;
+  margin: 0;
+}
+#page-personal .personal-card .evidence-fact {
+  display: block;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+#page-personal .personal-card .evidence-facts dd {
+  margin: 8px 0 0;
+  font-size: 17px;
+}
+#page-personal .personal-card .account-fact-unknown dd,
+#page-personal .personal-card .account-fact-notes dd {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+#page-personal .personal-card .account-fact-notes {
+  grid-column: 1 / -1;
+}
+#page-personal .personal-card .personal-actions {
+  justify-content: flex-end;
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+}
+#page-personal .personal-card .personal-actions button {
+  min-height: 36px;
+}
+#page-personal .personal-card [data-personal-action="delete"] {
+  color: var(--critical);
+}
+
+/* AI predictions are ranked evidence rows; the saved paper ledger occupies a distinct section. */
+#page-ai-quant .account-aiq-candidates {
+  min-width: 0;
+}
+#page-ai-quant #aiq-page-rows {
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  gap: 12px;
+}
+#page-ai-quant .aiq-prediction-card {
+  display: grid;
+  grid-template-columns: 160px minmax(0,1fr);
+  gap: 0 24px;
+  padding: 20px;
+}
+#page-ai-quant .account-prediction-identity {
+  min-width: 0;
+  padding-right: 20px;
+  border-right: 1px solid var(--border);
+}
+#page-ai-quant .account-prediction-identity .card-kicker {
+  margin: 0 0 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+#page-ai-quant .account-prediction-identity h2 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+#page-ai-quant .account-prediction-identity p:last-child {
+  font-size: 12px;
+  margin: 0;
+}
+#page-ai-quant .aiq-prediction-card .evidence-facts {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: 16px;
+  align-self: center;
+  margin: 0;
+}
+#page-ai-quant .aiq-prediction-card .evidence-facts > div {
+  border: 0;
+  padding: 0;
+}
+#page-ai-quant .aiq-prediction-card .evidence-facts dd {
+  margin-top: 8px;
+  font-size: 20px;
+}
+#page-ai-quant .aiq-prediction-card > p {
+  grid-column: 2;
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+#page-ai-quant .aiq-lifecycle-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  margin: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-subtle);
+}
+#page-ai-quant .account-evidence-stage {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+#page-ai-quant .account-evidence-separator {
+  color: var(--text-muted);
+}
+#page-ai-quant .account-aiq-ledger {
+  min-width: 0;
+  margin-top: 20px;
+}
+#page-ai-quant .aiq-paper-card {
+  padding: 20px;
+  margin: 0;
+}
+#page-ai-quant .aiq-paper-card > h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+#page-ai-quant .aiq-paper-card > .muted {
+  font-size: 12px;
+}
+#page-ai-quant .aiq-paper-card .evidence-facts {
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  margin-top: 24px;
+}
+#page-ai-quant .aiq-paper-card .evidence-facts dd {
+  font-size: 19px;
+}
+#page-ai-quant .aiq-saved-positions {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 8px 20px;
+  padding-top: 16px;
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+}
+#page-ai-quant .aiq-saved-positions p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+#page-ai-quant .aiq-secondary {
+  margin: 20px 0 0;
+  border-radius: 10px;
+  padding: 0;
+}
+#page-ai-quant .aiq-secondary > summary {
+  min-height: 48px;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+#page-ai-quant .aiq-secondary[open] > summary {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+#page-ai-quant .aiq-secondary > :not(summary) {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+#page-ai-quant #aiq-plan-records {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+}
+#page-ai-quant .aiq-plan-record {
+  padding: 16px;
+}
+#page-ai-quant .aiq-plan-record .evidence-facts {
+  grid-template-columns: repeat(2,minmax(0,1fr));
+}
+#page-ai-quant .aiq-plan-record .evidence-facts dd {
+  font-size: 15px;
+}
+
+#page-plans #plans-list { display:block; }
+#page-plans #plans-list > .aiq-plan-record { padding:0; margin:0 0 8px; }
+#page-plans .plan-record-details { border:0; padding:0; margin:0; background:var(--surface); }
+#page-plans .plan-record-summary { display:flex; align-items:center; gap:20px; padding:16px 20px; min-height:58px; cursor:pointer; }
+#page-plans .plan-record-summary::before { content:"▸"; color:var(--text-muted); flex:none; }
+#page-plans .plan-record-details[open] > summary::before { transform:rotate(90deg); }
+#page-plans .plan-record-summary h3 { margin:0; font-size:14px; font-weight:500; flex:1; }
+#page-plans .plan-record-time { font-size:12px; color:var(--text-muted); }
+#page-plans .plan-record-state { font-size:11px; padding:4px 8px; background:var(--surface-subtle); border-radius:4px; color:var(--text-secondary); }
+#page-plans .plan-record-content { padding:0 20px 20px; }
+@media(max-width:700px) {
+  #page-plans .plan-record-summary { flex-wrap:wrap; gap:8px; padding:16px; }
+  #page-plans .plan-record-summary h3 { flex:1; min-width:160px; }
+  #page-plans .plan-record-time { padding-left:16px; }
+  #page-plans .plan-record-content { padding:0 16px 16px; }
+}
+
+/* Forward has no fabricated progress denominator or performance series. */
+#page-forward .account-forward-workspace {
+  display: grid;
+  grid-template-columns: minmax(0,1.1fr) minmax(0,.9fr);
+  gap: 20px;
+  align-items: stretch;
+}
+#page-forward #forward-summary {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 208px;
+  margin: 0;
+  padding: 28px;
+}
+#page-forward .aiq-forward-day {
+  color: var(--text);
+  font-size: 38px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+#page-forward .aiq-forward-day.account-forward-unknown {
+  font-size: 24px;
+  line-height: 1.5;
+}
+#page-forward #forward-summary p {
+  margin: 12px 0 0;
+  font-size: 13px;
+}
+#page-forward .account-forward-runtime {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 24px;
+  min-width: 0;
+}
+#page-forward #forward-runtime-note {
+  margin: 0;
+}
+#page-forward #forward-runtime-note p {
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+/* Plans remain records, never controls for financial execution. */
+#page-plans > button[data-page="page-ai-quant"] {
+  margin: 0 0 16px;
+  min-height: 40px;
+}
+#page-plans #plans-list {
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 20px;
+}
+#page-plans .aiq-plan-record {
+  padding: 20px;
+}
+#page-plans .aiq-plan-record h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+#page-plans .aiq-plan-record > .muted {
+  font-size: 12px;
+  line-height: 1.7;
+}
+#page-plans .aiq-plan-record .evidence-facts {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 20px;
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+}
+#page-plans .aiq-plan-record .evidence-facts dd {
+  font-size: 17px;
+}
+#page-plans .aiq-plan-record .evidence-fact:first-child {
+  grid-column: 1 / -1;
+}
+#page-plans .aiq-plan-record .evidence-fact:first-child dd {
+  font-size: 13px;
+}
+#page-plans .aiq-plan-record details {
+  margin-bottom: 0;
+}
+
+/* Research: keep sample-out evidence and historical replay explicitly separate. */
+#page-backtest .account-research-workspace {
+  display: grid;
+  grid-template-columns: minmax(0,1.12fr) minmax(0,.88fr);
+  gap: 20px;
+  align-items: start;
+}
+#page-backtest .account-research-workspace > .research-section {
+  margin: 0;
+  padding: 24px;
+  min-width: 0;
+}
+#page-backtest .account-research-workspace > .research-section:last-child {
+  grid-column: 1 / -1;
+}
+#page-backtest .section-heading {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+#page-backtest .section-heading h2 {
+  font-size: 17px;
+  margin: 0 0 8px;
+}
+#page-backtest .section-heading p,
+#page-backtest #research-classification-note {
+  font-size: 12px;
+  line-height: 1.7;
+}
+#page-backtest #research-oos-metrics .evidence-facts {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+}
+#page-backtest #research-replay-metrics .evidence-facts,
+#page-backtest #research-replay-costs .evidence-facts {
+  grid-template-columns: repeat(2,minmax(0,1fr));
+}
+#page-backtest .evidence-facts {
+  gap: 24px;
+  margin: 0;
+}
+#page-backtest .evidence-facts dd {
+  margin-top: 8px;
+  font-size: 24px;
+  line-height: 1.3;
+}
+#page-backtest #research-replay-metrics .evidence-fact:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+#page-backtest .account-return-up dd {
+  color: var(--up);
+}
+#page-backtest .account-return-down dd {
+  color: var(--down);
+}
+#page-backtest .aiq-secondary {
+  margin: 24px 0 0;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--surface-subtle);
+}
+#page-backtest #research-replay-costs {
+  padding-top: 20px;
+}
+#page-backtest #research-replay-costs .evidence-facts dd {
+  font-size: 18px;
+}
+#page-backtest #research-replay-exits p {
+  font-size: 12px;
+  line-height: 1.8;
+}
+#page-backtest #research-limitations {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px 24px;
+}
+#page-backtest #research-limitations p {
+  padding-left: 16px;
+  margin: 0;
+  border-left: 2px solid var(--border-strong);
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.8;
+}
+#page-backtest .research-archive {
+  border-radius: 8px;
+  box-shadow: none;
+}
+#page-backtest .report-viewer {
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Arena's shared ledger rows and original modal logic stay in their existing module. */
+#page-arena .heading-meta {
+  align-items: flex-end;
+  gap: 4px;
+}
+#page-arena .arena-overview {
+  border-radius: 10px;
+  gap: 36px;
+}
+#page-arena .arena-overview > div {
+  min-width: 100px;
+}
+#page-arena .arena-overview strong {
+  font-size: 26px;
+  font-weight: 500;
+}
+#page-arena .arena-overview span {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+}
+#page-arena .arena-table-head span:nth-child(4),
+#page-arena .arena-account > span:nth-child(4) {
+  text-align: right;
+}
+#page-arena .arena-leaderboard {
+  border-radius: 10px;
+}
+#page-arena .arena-dialog-header {
+  background: var(--surface);
+}
+#page-arena #arena-detail .arena-summary .evidence-facts {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 24px;
+  margin: 24px 0;
+}
+#page-arena #arena-detail .arena-summary .evidence-facts > div {
+  padding: 0;
+  border: 0;
+}
+#page-arena #arena-detail .arena-summary dt {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+#page-arena #arena-detail .arena-summary dd {
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: 500;
+}
+#page-arena .arena-table .account-table-number {
+  text-align: right;
+}
+#page-arena .arena-table-scroll {
+  border-color: var(--border);
+  border-radius: 8px;
+}
+#page-arena .arena-tabs {
+  margin-bottom: 20px;
+  gap: 28px;
+  border-color: var(--border);
+}
+#page-arena .arena-tab {
+  min-height: 44px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+#page-arena .arena-tab[aria-selected="true"] {
+  color: var(--text);
+  border-color: var(--accent);
+}
+#page-arena .arena-transaction-details summary {
+  min-height: 32px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 1200px) {
+  #page-personal .personal-workspace {
+    grid-template-columns: minmax(270px,.76fr) minmax(0,1.24fr);
+    gap: 20px;
+  }
+  #page-personal .personal-card .evidence-facts {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+  #page-ai-quant .aiq-prediction-card {
+    grid-template-columns: 136px minmax(0,1fr);
+    gap: 0 20px;
+  }
+  #page-ai-quant .aiq-prediction-card .evidence-facts {
+    gap: 12px;
+  }
+  #page-ai-quant .aiq-prediction-card .evidence-facts dd {
+    font-size: 18px;
+  }
+  #page-backtest .account-research-workspace {
+    grid-template-columns: minmax(0,1fr);
+  }
+  #page-backtest #research-replay-metrics .evidence-facts {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+  }
+  #page-backtest #research-replay-metrics .evidence-fact:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
+@media (max-width: 950px) {
+  #page-personal .personal-workspace,
+  #page-forward .account-forward-workspace {
+    grid-template-columns: minmax(0,1fr);
+  }
+  #page-ai-quant .aiq-prediction-card {
+    grid-template-columns: 144px minmax(0,1fr);
+  }
+  #page-ai-quant .aiq-prediction-card .evidence-facts {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    gap: 16px;
+  }
+  #page-ai-quant #aiq-plan-records,
+  #page-ai-quant .aiq-saved-positions {
+    grid-template-columns: minmax(0,1fr);
+  }
+  #page-plans #plans-list {
+    grid-template-columns: minmax(0,1fr);
+  }
+  #page-arena .arena-table-head span:nth-child(4),
+  #page-arena .arena-account > span:nth-child(4) {
+    text-align: left;
+  }
+}
+@media (max-width: 700px) {
+  #page-personal #personal-backup-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+  #page-personal #personal-holding-form,
+  #page-personal .personal-card {
+    padding: 16px;
+  }
+  #page-ai-quant .aiq-prediction-card {
+    grid-template-columns: minmax(0,1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+  #page-ai-quant .account-prediction-identity {
+    padding: 0 0 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  #page-ai-quant .aiq-prediction-card .evidence-facts,
+  #page-ai-quant .aiq-paper-card .evidence-facts {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+  #page-ai-quant .aiq-prediction-card > p {
+    grid-column: 1;
+    margin: 0;
+  }
+  #page-ai-quant .aiq-secondary > :not(summary) {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+  #page-forward #forward-summary {
+    padding: 24px;
+    min-height: 180px;
+  }
+  #page-forward .account-forward-runtime,
+  #page-backtest .account-research-workspace > .research-section {
+    padding: 20px;
+  }
+  #page-plans .aiq-plan-record .evidence-facts,
+  #page-backtest #research-oos-metrics .evidence-facts,
+  #page-backtest #research-replay-metrics .evidence-facts {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+  #page-backtest .evidence-facts dd {
+    font-size: 21px;
+  }
+  #page-backtest #research-limitations {
+    grid-template-columns: minmax(0,1fr);
+  }
+  #page-arena .heading-meta {
+    align-items: flex-start;
+  }
+  #page-arena .arena-overview {
+    gap: 20px;
+  }
+  #page-arena #arena-detail .arena-summary .evidence-facts {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 20px;
+  }
+  #page-arena .arena-table th,
+  #page-arena .arena-table td {
+    padding: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(#page-arena,#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) *,
+  :is(#page-arena,#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) *::before,
+  :is(#page-arena,#page-personal,#page-ai-quant,#page-forward,#page-plans,#page-backtest) *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

@@ -43,6 +43,17 @@ def test_environment_template_requires_empty_sensitive_values():
     assert guard.path_findings('.env.example', b'LLM_API_KEY=\nDAEMON_PORT=8020\n') == []
 
 
+def test_reviewed_ui_screenshots_are_exactly_pinned_not_a_generic_image_allowance():
+    images = {path: sha for path, sha in guard.REVIEWED_BINARY.items() if path.startswith('docs/images/')}
+    assert len(images) == 3
+    for path, expected in images.items():
+        body = (ROOT / path).read_bytes()
+        assert body.startswith(b'\xff\xd8') and hashlib.sha256(body).hexdigest() == expected
+        assert guard.path_findings(path, body) == []
+        assert guard.path_findings(path, body + b'changed')
+    assert guard.path_findings('docs/images/unreviewed.jpg', b'\xff\xd8')
+
+
 def test_git_object_reader_detects_an_unreachable_blob(tmp_path):
     import subprocess
     subprocess.run(['git', 'init', '-q', '--template=', str(tmp_path)], check=True)

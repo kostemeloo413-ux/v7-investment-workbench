@@ -57,7 +57,8 @@ def client():
 
 def test_default_page_and_health_need_no_private_season(client):
     assert client.get('/').status_code == 200
-    assert '历史撮合演示' in client.get('/demo').text
+    assert 'data-ui-demo="synthetic-v1"' in client.get('/demo').text
+    assert '历史撮合演示' in client.get('/replay').text
     health = client.get('/api/health').json()
     assert health['scheduler_started'] is False and health['real_trading'] is False
     result = client.get('/api/demo')

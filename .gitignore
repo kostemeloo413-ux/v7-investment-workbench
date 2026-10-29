@@ -221,3 +221,23 @@
 !/tests/datasource/test_forward_exit_independence.py
 !/tests/datasource/test_recovery_runtime.py
 !/docs/TRADING_RECOVERY.md
+
+# Reviewed v3-r3 UI resources and isolated synthetic preview.
+!/workbench_v7/css/unified.css
+!/workbench_v7/css/home-v3.css
+!/workbench_v7/css/market-pages.css
+!/workbench_v7/css/account-pages.css
+!/workbench_v7/css/system-pages.css
+!/workbench_v7/css/public_ui.css
+!/workbench_v7/js/candidate_heatgrid.js
+!/workbench_v7/js/dashboard_charts.js
+!/workbench_v7/js/unified-ui.js
+!/workbench_v7/js/market-pages.js
+!/workbench_v7/js/account-pages.js
+!/workbench_v7/js/system-pages.js
+!/scripts/public_ui_fixture.py
+!/tests/test_public_ui.py
+!/docs/UI_PREVIEW.md
+!/docs/images/ui-v3-overview.jpg
+!/docs/images/ui-v3-news.jpg
+!/docs/images/ui-v3-picks.jpg

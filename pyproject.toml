@@ -1,6 +1,7 @@
 [tool.pytest.ini_options]
 testpaths = [
   "tests/test_public_preview.py",
+  "tests/test_public_ui.py",
   "tests/test_public_privacy_gate.py",
   "tests/datasource/test_provider_adapters.py",
   "tests/datasource/test_market_data_service.py",

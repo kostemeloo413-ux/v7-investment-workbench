@@ -3,7 +3,7 @@
  * Phase UI-3: V7 只读聚合 API 统一客户端 (只读、带超时、防并发、带缓存)
  */
 const V7Api = {
-  baseUrl: '/api/v7',
+  baseUrl: document.documentElement.dataset.uiDemo === 'synthetic-v1' ? '/api/ui-demo' : '/api/v7',
 
   async getOverview() {
     return this._fetchJson(`${this.baseUrl}/overview`);

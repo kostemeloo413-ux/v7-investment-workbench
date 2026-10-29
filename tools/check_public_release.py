@@ -30,6 +30,10 @@ PRIVATE_ROOTS = {'.planning', '.workbuddy', '.zcode', 'private_audit', 'state', 
 PRIVATE_NAMES = {'PROJECT_MEMORY.md', 'AGENTS.md', 'llm_profiles.json', '.gitleaksignore'}
 TEXT_SUFFIXES = {'.py', '.md', '.txt', '.json', '.yaml', '.yml', '.toml', '.js', '.css', '.html', '.example'}
 REVIEWED_BINARY = {
+    'docs/images/ui-v3-overview.jpg': '33e45575fad0fc7ee9bd748cac666d23aa2690c78777dea8e7ec6e9043d238b2',
+    'docs/images/ui-v3-news.jpg': 'a374d090746d967cb9ad2775d42835b38b0ec3e33061e5ce4b1fe2fd9f078052',
+    'docs/images/ui-v3-picks.jpg': '91a9e799e10a2f7dcda50252f8f989604cdd2261c1ebec01ce75a273b937c821',
+
     'models/ai_quant/calibrator_AIQ-V1.0.pkl': '8e6bbc3d27a155947d3b1df7bc1cd918f523dab960c081c9aa535ceba9931b9c',
 }
 

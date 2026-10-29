@@ -21,3 +21,8 @@ Keep `.env`, LLM profiles, raw audio/transcripts, account ledgers, databases, pr
 The public snapshot is intentionally a clean history. Its initial commit date is the actual publication-preparation date. Past development is described only with verifiable, sanitized milestones, not fabricated backdated commits.
 
 Sources: [Gitleaks usage](https://github.com/gitleaks/gitleaks), [pinned release](https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1), [GitHub sensitive-data guidance](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository).
+
+
+## Reviewed UI screenshots
+
+The three JPEGs under `docs/images/ui-v3-*.jpg` are captured from the synthetic public UI, not the private workbench. Each was visually inspected and is pinned to its exact reviewed SHA256 in `REVIEWED_BINARY`. Changing an image requires a new review; no generic image or directory exemption is added. Real account/news/credential screenshots remain outside the release.

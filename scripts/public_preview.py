@@ -17,6 +17,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Redirect
 from fastapi.staticfiles import StaticFiles
 from daemon.v7_api import v7_router
 from scripts.public_demo import run_demo
+from scripts.public_ui_fixture import ui_fixture
 
 
 def create_preview_app():
@@ -41,7 +42,15 @@ def create_preview_app():
 
     @app.get('/demo')
     def demo_page():
+        return ui_page(synthetic=True)
+
+    @app.get('/replay')
+    def replay_page():
         return FileResponse(ROOT / 'workbench_v7' / 'public_demo.html')
+
+    @app.get('/api/ui-demo/{endpoint:path}')
+    def demo_ui_data(endpoint: str):
+        return ui_fixture(endpoint)
 
     @app.get('/api/demo')
     def demo_result():
@@ -53,11 +62,20 @@ def create_preview_app():
 
     @app.get('/v7')
     def workbench():
+        return ui_page(synthetic=False)
+
+    def ui_page(synthetic):
         page = (ROOT / 'workbench_v7/index.html').read_text(encoding='utf-8-sig')
-        notice = '<aside class="public-preview-notice" role="note">公开源码预览 · 未接入实时行情或实际账户 · <a href="/demo">查看历史撮合演示</a></aside>'
+        if synthetic:
+            page = page.replace('<html lang="zh-CN">', '<html lang="zh-CN" data-ui-demo="synthetic-v1">', 1)
+            label = '<strong>界面示例 · 合成数据</strong>　非实时行情，不代表选股结果或真实账户'
+            links = '<a href="/v7">查看无数据状态</a><a href="/replay">历史撮合回放</a>'
+        else:
+            label = '<strong>公开源码预览</strong>　未接入实时行情或实际账户'
+            links = '<a href="/demo">查看新版界面示例</a><a href="/replay">查看历史撮合演示</a>'
+        notice = '<aside class="public-preview-notice" role="note"><span>' + label + '</span><nav class="public-preview-links" aria-label="公开示例入口">' + links + '</nav></aside>'
         page = page.replace('<body>', '<body>' + notice, 1)
-        style = '<style>.public-preview-notice{padding:10px 18px;background:#fff4dd;color:#5a4308;font:13px system-ui;line-height:1.5}.public-preview-notice a{color:inherit;text-decoration:underline}</style>'
-        return HTMLResponse(page.replace('</head>', style + '</head>', 1))
+        return HTMLResponse(page.replace('</head>', '<link rel="stylesheet" href="/workbench_v7/css/public_ui.css?v=20261029-v3-r3"></head>', 1))
 
     return app
 

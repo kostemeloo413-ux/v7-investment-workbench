@@ -8,6 +8,11 @@
   <link rel="stylesheet" href="/workbench_v7/css/tokens.css">
   <link rel="stylesheet" href="/workbench_v7/css/layout.css?v=fullscreen-layout-v2-1-r1">
 <link rel="stylesheet" href="/workbench_v7/css/arena.css?v=arena-grid-dialog-r1">
+<link rel="stylesheet" href="/workbench_v7/css/unified.css?v=20261029-v3">
+  <link rel="stylesheet" href="/workbench_v7/css/home-v3.css?v=20261029-v3-r3">
+  <link rel="stylesheet" href="/workbench_v7/css/market-pages.css?v=20261029-v3-r3">
+  <link rel="stylesheet" href="/workbench_v7/css/account-pages.css?v=20261029-v3-r2">
+  <link rel="stylesheet" href="/workbench_v7/css/system-pages.css?v=20261029-v3">
 </head>
 <body>
   <header class="topbar" id="top-context-bar">
@@ -68,11 +73,36 @@
     <main class="main-content">
       <section class="page-view active" id="page-overview">
         <div class="page-heading overview-heading">
-          <div><div class="eyebrow">V7 / 今日</div><h1>今日总览</h1><p>看市场、找机会，了解账户与策略。</p></div>
+          <div class="overview-title"><h1>今日总览</h1><p>市场、机会与风险</p></div>
+          <div class="overview-toolbar"><span id="preview-today"></span><div class="overview-status-note" role="status"><span id="overview-user-status">数据状态待确认</span><button class="text-link" id="overview-details-link" type="button">系统详情</button></div></div>
         </div>
-        <div class="overview-status-note" role="status"><span id="overview-user-status">数据状态待确认</span><button class="text-link" id="overview-details-link" type="button">查看系统详情</button></div>
-
-        <section class="overview-layer" id="overview-market-layer" aria-labelledby="overview-market-heading" hidden>
+        <div id="overview-visual">
+          <section class="overview-insight" aria-label="今日研判摘要">
+            <div class="insight-item"><span class="insight-signal" aria-hidden="true"></span><div><div class="insight-kicker">市场环境</div><div id="insight-environment" class="insight-value">待确认</div><div id="insight-environment-note" class="insight-sub">规则记录读取中</div></div></div>
+            <div class="insight-item"><div><div class="insight-kicker">五策略观点</div><div class="insight-opinion-main"><div id="insight-opinions" class="insight-value">观点待确认</div><div id="insight-opinions-note" class="insight-sub">观点记录，非交易授权</div></div><div id="opinion-cells" class="opinion-cells" aria-label="五策略观点"></div></div></div>
+            <div class="insight-item"><div><div id="insight-risk" class="insight-kicker">风险关注</div><div id="risk-chips" class="risk-chips"></div><div id="insight-risk-note" class="insight-sub">检查数据状态与来源</div></div></div>
+          </section>
+          <div class="overview-workspace">
+            <section class="visual-panel" aria-labelledby="unified-market-title">
+              <div class="panel-title"><h2 id="unified-market-title">市场走势</h2><div class="chart-toolbar"><div class="chart-window" role="group" aria-label="走势图显示时段"><button type="button" data-chart-mode="recorded" aria-pressed="true">已记录时段</button><button type="button" data-chart-mode="full" aria-pressed="false">全日</button></div></div></div>
+              <span id="market-record-time" class="market-record-date">保存分时</span><div id="unified-index-tabs" class="index-tabs" role="tablist" aria-label="分时指数选择"></div>
+              <div id="unified-chart" class="chart-host"></div>
+              <div class="chart-notes"><span id="chart-readout" class="chart-readout" aria-live="polite"></span><span id="chart-session-note" class="chart-session-note"></span></div>
+            </section>
+            <section class="visual-panel" aria-labelledby="unified-heat-title">
+              <div class="panel-title"><h2 id="unified-heat-title">候选股票热力格</h2><button class="text-link" data-ui-page="page-picks">查看全部</button></div>
+              <div class="heat-meta"><span id="heat-batch">当前批次待确认</span><span id="heat-count"></span></div>
+              <div id="unified-heat-grid" class="heat-grid"></div>
+              <div class="heat-legend"><span><i class="legend-up"></i>上涨 <i class="legend-down"></i>下跌 <i class="legend-unknown"></i>待确认</span><span id="heat-quality">扫描记录涨跌，非实时行情</span></div>
+            </section>
+          </div>
+          <div class="overview-lower">
+            <section class="visual-panel" aria-labelledby="unified-accounts-title"><div class="panel-title"><h2 id="unified-accounts-title">模拟账户</h2><button class="text-link" data-ui-page="page-arena">查看竞技场</button></div><div id="unified-account-list" class="overview-list"></div><p id="home-account-caption" class="home-account-caption"></p></section>
+            <section class="visual-panel" aria-labelledby="unified-news-title"><div class="panel-title"><h2 id="unified-news-title">新闻关注</h2><button class="text-link" data-ui-page="page-news">全部新闻</button></div><div id="unified-news"></div></section>
+            <section class="visual-panel" aria-labelledby="unified-risks-title"><div class="panel-title"><h2 id="unified-risks-title">风险与数据状态</h2><button class="text-link" data-ui-page="page-health">查看详情</button></div><div id="unified-risks"></div></section>
+          </div>
+        </div>
+<div class="overview-legacy" aria-hidden="true">        <section class="overview-layer" id="overview-market-layer" aria-labelledby="overview-market-heading" hidden>
           <div class="layer-heading"><div><span class="layer-index">01</span><div><h2 id="overview-market-heading">市场环境</h2><p id="overview-market-time"></p></div></div><button class="text-link" data-page="page-market">查看市场环境 →</button></div>
           <div id="overview-market-summary" class="card market-environment-summary" aria-live="polite"></div>
         </section>
@@ -95,6 +125,7 @@
           </div>
         </section>
 
+</div>
         <details class="technical-details overview-system-details" id="overview-system-details">
           <summary>系统详情</summary>
           <div class="overview-technical-facts">
@@ -123,10 +154,10 @@
         <details class="technical-details" id="market-environment-details"><summary>查看判断依据</summary><div id="market-environment-basis"></div><pre class="technical-json" id="market-technical-json"></pre></details>
       </section>
       <section class="page-view" id="page-news">
-        <div class="page-heading"><div><div class="eyebrow">02 / 市场</div><h1>新闻快讯</h1><p>真实 News Officer 保存内容；新闻原文与 AI 研判分开展示。</p></div><div class="heading-meta"><span id="news-page-status">读取中</span><span id="news-capture-time">采集批次：UNKNOWN</span></div></div>
+        <div class="page-heading"><div><div class="eyebrow">02 / 市场</div><h1>新闻快讯</h1><p>浏览已保存的新闻，按需展开正文与 AI 研判。</p></div><div class="heading-meta"><span id="news-page-status">读取中</span><span id="news-capture-time">采集批次：UNKNOWN</span></div></div>
         <div id="news-page-warning" class="state-panel unavailable"><strong>NEWS_DATA_LOADING</strong><p>正在读取现有新闻文件，不会执行采集。</p></div>
         <div class="card-grid two-col news-columns"><article class="card"><div class="card-heading"><h2>热点新闻</h2><span id="news-hot-count" class="status-chip neutral">0</span></div><div id="news-hot-list" class="news-list"></div></article><article class="card"><div class="card-heading"><h2>普通新闻</h2><span id="news-ordinary-count" class="status-chip neutral">0</span></div><div id="news-ordinary-list" class="news-list"></div></article></div>
-        <p class="data-source-note">新闻条目的 `time` 是来源记录时间；现有采集链未逐条保留可信时间来源证明，因此不宣称为已独立核验的发布时间。AI 研判仅在有模型元数据时单独标注。</p>
+
       </section>
       <section class="page-view" id="page-picks">
         <div class="page-heading"><div><div class="eyebrow">03 / 选股</div><h1>今日选股</h1><p>看看五个策略今天关注什么。策略观点不代表订单或成交。不从历史 Top5 推导今日推荐。</p></div><div class="heading-meta"><span id="picks-page-status">读取中</span><span id="picks-as-of"></span></div></div>
@@ -146,7 +177,7 @@
         <div class="page-heading"><div><div class="eyebrow">04 / 账户</div><h1>竞技场</h1><p>六个模拟账户的真实账本表现</p></div><div class="heading-meta"><span id="arena-status">读取中</span><span id="arena-season">模拟账户</span><button type="button" id="arena-refresh" class="secondary-button">刷新数据</button></div></div>
         <p id="arena-sync" class="arena-sync">页面同步：时间待确认 · 账户数据时间待确认</p>
         <div id="arena-warning" class="state-panel unavailable"><strong>正在读取账户数据</strong><p>资金、持仓和交易记录将按已有账本展示。</p></div>
-        <h2 class="arena-ranking-title">模拟账户收益排名</h2><div class="arena-workspace"><div id="arena-grid" class="arena-leaderboard" aria-label="模拟账户收益排名"></div></div><dialog id="arena-detail-dialog" class="arena-detail-dialog" aria-modal="true" aria-labelledby="arena-dialog-title"><header class="arena-dialog-header"><h2 id="arena-dialog-title">账户详情</h2><button id="arena-dialog-close" class="arena-dialog-close" type="button" aria-label="关闭账户详情">关闭</button></header><div class="arena-dialog-content"><article id="arena-detail" class="card" aria-live="polite"></article></div></dialog>
+        <div id="arena-visual-summary" class="arena-overview" aria-label="账户概况"></div><h2 class="arena-ranking-title">模拟账户收益排名</h2><div class="arena-table-head" aria-hidden="true"><span>模拟账户</span><span>累计收益率</span><span>相对零基线</span><span>账本总资产</span><span>持仓</span><span>运行与估值</span></div><div class="arena-workspace"><div id="arena-grid" class="arena-leaderboard" aria-label="模拟账户收益排名"></div></div><dialog id="arena-detail-dialog" class="arena-detail-dialog" aria-modal="true" aria-labelledby="arena-dialog-title"><header class="arena-dialog-header"><h2 id="arena-dialog-title">账户详情</h2><button id="arena-dialog-close" class="arena-dialog-close" type="button" aria-label="关闭账户详情">关闭</button></header><div class="arena-dialog-content"><article id="arena-detail" class="card" aria-live="polite"></article></div></dialog>
         <div class="sentinel-note">风险观察席 · 反指哨兵 · 无本金 · 不交易 · 不参与收益排名</div>
       </section>
       <section class="page-view" id="page-personal"><div class="page-heading"><div><div class="eyebrow">04 / 账户</div><h1>个人持仓</h1><p>独立浏览器本地数据；与 Arena、AI Quant Paper、模拟账本分离。</p></div><div class="heading-meta"><span id="personal-storage-status">本地存储读取中</span></div></div><div id="personal-warning" class="state-panel hold"><strong>PERSONAL_PORTFOLIO_LOCAL_ONLY</strong><p>这不是券商实时资产；无合格行情时当前价、市值、浮盈亏保持 UNKNOWN。清理浏览器数据可能丢失记录，请定期导出备份。</p></div><div class="personal-actions" id="personal-backup-actions"><button class="text-link" id="personal-export" type="button">导出本地备份</button><a class="text-link" id="personal-download-link" hidden>若未自动下载，点此保存备份</a><label class="text-link" for="personal-import-file">导入备份</label><input id="personal-import-file" type="file" accept="application/json,.json" hidden></div><form id="personal-holding-form" class="personal-form"><input id="personal-edit-index" type="hidden"><label>代码<input id="personal-symbol" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required></label><label>名称<input id="personal-name" maxlength="80" required></label><label>数量<input id="personal-shares" type="number" min="1" step="1" required></label><label>成本价<input id="personal-cost" type="number" min="0.01" step="0.01" required></label><label class="personal-notes">备注<input id="personal-notes" maxlength="300"></label><div class="personal-actions"><button class="primary-button" type="submit">保存个人记录</button><button class="text-link" id="personal-cancel-edit" type="button">取消编辑</button></div></form><div id="personal-holdings" class="card-grid two-col"></div></section>
@@ -201,7 +232,17 @@
       <section class="page-view" id="page-llm"><div class="page-heading"><div><div class="eyebrow">06 / 系统</div><h1>LLM配置</h1><p>只显示脱敏配置存在性；不提供密钥编辑。</p></div></div><div id="llm-warning" class="state-panel unavailable"><strong>读取本进程只读配置状态</strong><p>不会返回 Key、Token 或其片段。</p></div><div id="llm-grid" class="card-grid two-col"></div></section>
       <section class="page-view" id="page-wecom"><div class="page-heading"><div><div class="eyebrow">06 / 系统</div><h1>企业微信</h1><p>仅查看脱敏配置和已持久化通知状态。</p></div></div><div id="wecom-warning" class="state-panel unavailable"><strong>通知配置只读</strong><p>Webhook secret 不会回显。</p></div><div id="wecom-grid" class="card-grid two-col"></div></section>
       <section class="page-view" id="page-health"><div class="page-heading"><div><div class="eyebrow">06 / 系统</div><h1>系统健康</h1></div></div><div class="state-panel hold" id="system-health-state"><strong>业务健康读取中</strong><p>进程心跳只代表进程存活，不独立代表业务健康。</p></div></section>
-      <section class="page-view" id="page-settings"><div class="page-heading"><div><div class="eyebrow">06 / 系统</div><h1>基础设置</h1><p>仅当前浏览器的低风险展示偏好。</p></div></div><form id="display-settings" class="card settings-form"><label>界面密度<select id="setting-density"><option value="comfortable">舒适</option><option value="compact">紧凑</option></select></label><label>默认页面<select id="setting-home"><option value="page-overview">今日总览</option><option value="page-market">市场环境</option><option value="page-picks">今日选股</option></select></label><button class="primary-button" type="submit">保存本地偏好</button><p class="muted">不包含交易权限、Provider 凭证或安全合同设置。</p></form></section>
+      <section class="page-view" id="page-settings">
+        <div class="page-heading"><div><h1>基础设置</h1><p>让工作台适合你的阅读习惯。</p></div><span class="preview-note"><span class="preview-tag">当前浏览器</span></span></div>
+        <div class="settings-layout">
+          <form id="display-settings" class="card settings-form"><h2 class="settings-section-title">展示偏好</h2>
+            <label class="setting-row" for="setting-density"><span><strong>界面密度</strong><small>调整列表行高和模块间距，保存后立即生效。</small></span><select id="setting-density"><option value="comfortable">舒适</option><option value="compact">紧凑</option></select></label>
+            <label class="setting-row" for="setting-home"><span><strong>默认页面</strong><small>下次打开工作台时，优先进入这个页面。</small></span><select id="setting-home"><option value="page-overview">今日总览</option><option value="page-market">市场环境</option><option value="page-picks">今日选股</option></select></label>
+            <div class="settings-save"><button class="primary-button" type="submit">保存本地偏好</button><p id="settings-feedback" role="status">偏好保存在此浏览器。</p></div>
+          </form>
+          <aside class="settings-side"><div class="card"><h2>本地展示设置</h2><p>界面密度与默认页面保存在当前浏览器，不会跨浏览器同步。</p><p>交易权限、策略参数与数据源凭证仍以原系统为准。</p><div class="density-sample" aria-label="密度预览"><div><span>市场环境</span><span>记录与来源</span></div><div><span>候选股票</span><span>观点与证据</span></div><div><span>模拟账户</span><span>账本与估值</span></div></div></div></aside>
+        </div>
+      </section>
 
       <footer class="page-footer"><span>V7 · 只读状态视图</span><span id="footer-source">状态与来源见系统详情</span><span>只读展示 · 不执行交易</span></footer>
     </main>
@@ -210,9 +251,17 @@
     <header class="pick-drawer-header"><h2 id="pick-drawer-title">策略详情</h2><button id="pick-drawer-close" class="secondary-button" type="button" aria-label="关闭策略详情" autofocus>关闭 ×</button></header>
     <div id="pick-drawer-content" class="pick-drawer-content"></div>
   </dialog>
+
+  <dialog id="heat-detail-dialog" class="heat-dialog" aria-labelledby="heat-dialog-title"><header><h2 id="heat-dialog-title">候选来源</h2><button class="secondary-button" id="heat-dialog-close" type="button" aria-label="关闭候选详情">关闭</button></header><div id="heat-dialog-content" class="heat-dialog-content"></div><footer><span class="muted">候选身份不代表交易授权</span><button class="primary-button" type="button" id="heat-analysis-link">查看个股分析</button></footer></dialog>
   <script src="/workbench_v7/js/api.js"></script>
   <script src="/workbench_v7/js/personal_portfolio_store.js"></script>
   <script src="/workbench_v7/js/app.js?v=fullscreen-layout-v2-1-r1"></script>
 <script src="/workbench_v7/js/arena.js?v=arena-grid-dialog-r1"></script>
+<script src="/workbench_v7/js/candidate_heatgrid.js"></script>
+<script src="/workbench_v7/js/dashboard_charts.js?v=20261029-v3"></script>
+<script src="/workbench_v7/js/unified-ui.js?v=20261029-v3"></script>
+<script src="/workbench_v7/js/market-pages.js?v=20261029-v3-r3"></script>
+<script src="/workbench_v7/js/account-pages.js?v=20261029-v3-r2"></script>
+<script src="/workbench_v7/js/system-pages.js?v=20261029-v3"></script>
 </body>
 </html>

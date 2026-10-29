@@ -1,0 +1,497 @@
+/* Hallmark v2; shape: app screen; surface: absolute; system monitoring and configuration in the approved V7 ledger. */
+/* Critique: distinguish business health, metadata, read-only configuration and report reading without changing their evidence. */
+/* Hallmark · waive 7b · White data sheets are part of the approved V7 ledger · The existing ledger uses white panels to keep configuration values and unknown status legible against the gray frame. */
+/* Hallmark · waive 24b · Compact source and report rows use deliberate optical spacing · These ledger rows keep their existing accessible controls while small label gaps use half steps to avoid inflated monitoring panels. */
+/* Hallmark · answered F7 · The repeated ledger surface is intentional across seven system screens; configuration rows, source states and the report workspace vary by task while the Owner-approved material stays consistent. */
+
+:is(#page-sources,#page-llm,#page-wecom,#page-health,#page-settings,#page-data,#page-reports) {
+  min-width:0;
+}
+:is(#page-sources,#page-llm,#page-wecom,#page-health,#page-settings,#page-data,#page-reports) :is(button,a,summary,input,select,[tabindex]):focus-visible {
+  outline:2px solid var(--accent);
+  outline-offset:3px;
+}
+:is(#page-sources,#page-llm,#page-wecom,#page-health,#page-settings,#page-data,#page-reports) button:active:not(:disabled) {
+  transform:translateY(1px);
+}
+:is(#page-sources,#page-llm,#page-wecom,#page-health,#page-settings,#page-data,#page-reports) h2 {
+  text-wrap:balance;
+}
+:is(#page-sources,#page-llm,#page-wecom,#page-health,#page-settings,#page-data,#page-reports) .page-heading {
+  align-items:flex-start;
+  min-height:50px;
+}
+:is(#page-sources,#page-llm,#page-wecom,#page-health,#page-settings,#page-data,#page-reports) .page-heading p {
+  max-width:780px;
+  line-height:1.7;
+}
+:is(#page-sources,#page-llm,#page-wecom,#page-health,#page-data,#page-reports) > .state-panel {
+  margin:0 0 20px;
+  border-radius:10px;
+  padding:14px 18px;
+}
+:is(#page-sources,#page-llm,#page-wecom,#page-health,#page-settings,#page-data,#page-reports) :is(.card,.technical-details,.report-viewer) {
+  border-radius:10px;
+}
+:is(#page-sources,#page-llm,#page-wecom,#page-health,#page-settings,#page-data,#page-reports) .technical-json {
+  max-width:100%;
+  font-size:12px;
+  line-height:1.7;
+}
+.system-empty {
+  grid-column:1/-1;
+  margin:0;
+  padding:28px 20px;
+  border:1px dashed var(--border-strong);
+  border-radius:10px;
+  color:var(--text-muted);
+  background:var(--surface);
+  font-size:13px;
+}
+
+/* Data sources: purpose, actual returned state and technical evidence have distinct tiers. */
+#page-sources #sources-grid {
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+  align-items:stretch;
+}
+#page-sources .source-card {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:20px;
+  min-width:0;
+}
+#page-sources .source-card > h2 {
+  margin:0;
+  font-size:17px;
+  font-weight:600;
+  overflow-wrap:anywhere;
+}
+#page-sources .source-purpose {
+  min-height:0;
+  margin:0 0 3px;
+  font-size:12px;
+  line-height:1.7;
+  color:var(--text-muted);
+}
+#page-sources .source-card .state-panel {
+  flex:1;
+  min-height:84px;
+  padding:12px 14px;
+  border:0;
+  border-left:2px solid var(--border-strong);
+  border-radius:0 6px 6px 0;
+}
+#page-sources .source-card .state-panel.hold {
+  border-left-color:var(--warning);
+}
+#page-sources .source-card .state-panel.error {
+  border-left-color:var(--critical);
+}
+#page-sources .source-card .state-panel strong {
+  font-size:13px;
+  line-height:1.6;
+}
+#page-sources .source-card .state-panel p {
+  margin:5px 0 0;
+  font-size:12px;
+  line-height:1.8;
+}
+#page-sources .source-details {
+  margin:0;
+  padding:0;
+  border:0;
+  border-top:1px solid var(--border);
+  border-radius:0;
+  background:none;
+}
+#page-sources .source-details summary {
+  min-height:40px;
+  padding:10px 0 0;
+  font-size:12px;
+  font-weight:400;
+}
+
+/* Read-only integrations are settings rows, not an unrelated collection of KPI tiles. */
+:is(#page-llm,#page-wecom) :is(#llm-grid,#wecom-grid) {
+  display:block;
+  max-width:1080px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+  overflow:clip;
+}
+:is(#page-llm,#page-wecom) .system-config-row {
+  display:grid;
+  grid-template-columns:minmax(180px,.85fr) minmax(0,1.4fr);
+  align-items:start;
+  gap:24px;
+  margin:0;
+  padding:18px 24px;
+  border:0;
+  border-bottom:1px solid var(--border);
+  border-radius:0;
+  box-shadow:none;
+  background:none;
+}
+:is(#page-llm,#page-wecom) .system-config-row:last-child {
+  border-bottom:0;
+}
+:is(#page-llm,#page-wecom) .system-config-row > h2 {
+  margin:0;
+  font-size:13px;
+  font-weight:500;
+  line-height:1.6;
+  color:var(--text);
+}
+.system-config-key {
+  display:block;
+  margin-top:3px;
+  font:12px/1.5 var(--font-sans);
+  color:var(--text-muted);
+  overflow-wrap:anywhere;
+}
+:is(#page-llm,#page-wecom) .system-config-value {
+  min-width:0;
+  margin:0;
+  font-size:14px;
+  line-height:1.6;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+}
+:is(#page-llm,#page-wecom) .system-config-row[data-value-kind="unknown"] .system-config-value {
+  color:var(--text-muted);
+}
+:is(#page-llm,#page-wecom) .system-config-row[data-config-key="last_notification"] .system-config-value {
+  font-family:var(--font-mono);
+  font-size:12px;
+}
+:is(#page-llm,#page-wecom) :is(#llm-grid,#wecom-grid) > .system-empty {
+  border:0;
+}
+
+/* Database storage facts and governance evidence are read as two separate records. */
+#page-data #data-center-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:20px;
+  align-items:start;
+}
+.system-record-group {
+  min-width:0;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+  overflow:clip;
+}
+.system-record-group > h2 {
+  margin:0;
+  padding:18px 20px;
+  border-bottom:1px solid var(--border);
+  font-size:15px;
+  font-weight:600;
+}
+#page-data .system-record-group > .card {
+  margin:0;
+  padding:16px 20px;
+  border:0;
+  border-bottom:1px solid var(--border);
+  border-radius:0;
+  background:none;
+}
+#page-data .system-record-group > .card:last-child {
+  border-bottom:0;
+}
+#page-data .system-record-group .card h2 {
+  margin:0 0 7px;
+  font-size:12px;
+  font-weight:400;
+  color:var(--text-muted);
+}
+#page-data .system-record-group .card p {
+  margin:0;
+  font-size:14px;
+  line-height:1.7;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+#page-data .system-record-group .card[data-record-key="正式数据库"] p {
+  font-family:var(--font-mono);
+  font-size:12px;
+}
+#page-data .system-record-group .card[data-record-kind="json"] p {
+  font-family:var(--font-mono);
+  font-size:12px;
+}
+#page-data .system-record-group .card[data-record-kind="unknown"] p {
+  color:var(--text-muted);
+}
+
+/* System health distinguishes the business view from process liveness and its guards. */
+.system-health-grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+  margin:0 0 20px;
+}
+.system-health-fact {
+  min-width:0;
+  padding:20px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+}
+.system-health-fact h2 {
+  margin:0 0 12px;
+  font-size:13px;
+  font-weight:500;
+  color:var(--text-secondary);
+}
+.system-health-fact strong {
+  display:block;
+  font-size:21px;
+  font-weight:500;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+.system-health-fact p {
+  margin:10px 0 0;
+  font-size:12px;
+  line-height:1.7;
+  color:var(--text-muted);
+}
+.system-health-fact[data-health-kind="unknown"] strong {
+  color:var(--text-muted);
+}
+#page-health .system-health-boundary {
+  padding:18px 20px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--surface);
+}
+#page-health .system-health-boundary h2 {
+  margin:0 0 10px;
+  font-size:15px;
+}
+#page-health .system-health-boundary p {
+  margin:0;
+  font-size:13px;
+  color:var(--text-secondary);
+  line-height:1.8;
+}
+
+/* Report directory and reading share a stable workspace; filters remain the original buttons. */
+.system-report-workspace {
+  display:block;
+  min-width:0;
+}
+.system-report-catalog {
+  min-width:0;
+}
+#page-reports #report-filters {
+  gap:8px;
+  margin:0 0 16px;
+}
+#page-reports .report-filter {
+  min-height:40px;
+  padding:8px 14px;
+  border-radius:6px;
+  border-color:var(--border);
+  background:var(--surface);
+  color:var(--text-secondary);
+  font-size:12px;
+}
+#page-reports .report-filter:hover {
+  border-color:var(--border-strong);
+  background:var(--surface-subtle);
+  color:var(--text);
+}
+#page-reports .report-filter.active {
+  border-color:var(--border-strong);
+  background:var(--accent-soft);
+  color:var(--text);
+  font-weight:500;
+}
+#page-reports #reports-list {
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+#page-reports .report-card {
+  gap:10px;
+  padding:20px;
+  min-width:0;
+}
+#page-reports .report-card .card-heading {
+  align-items:flex-start;
+  gap:12px;
+}
+#page-reports .report-card h2 {
+  font-size:15px;
+  line-height:1.6;
+  font-weight:600;
+  min-width:0;
+}
+#page-reports .report-card .status-chip {
+  flex:none;
+  margin-top:2px;
+  white-space:nowrap;
+  border:1px solid var(--border);
+  border-radius:4px;
+  background:var(--surface-subtle);
+  color:var(--text-secondary);
+}
+#page-reports .report-description {
+  font-size:13px;
+  line-height:1.8;
+  color:var(--text-secondary);
+}
+#page-reports .report-updated {
+  font-size:12px;
+  color:var(--text-muted);
+}
+#page-reports .report-technical {
+  margin:0;
+  padding:0;
+  border:0;
+  border-top:1px solid var(--border);
+  border-radius:0;
+}
+#page-reports .report-technical summary {
+  padding:10px 0 0;
+  min-height:40px;
+  font-weight:400;
+}
+#page-reports .report-viewer {
+  position:relative;
+  min-width:0;
+  margin:0;
+  padding:24px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  scroll-margin-top:76px;
+}
+#page-reports .report-viewer-title {
+  padding-right:100px;
+  margin:0 0 18px;
+  font-size:20px;
+  font-weight:600;
+  line-height:1.6;
+}
+.system-report-close {
+  position:absolute;
+  right:20px;
+  top:20px;
+  min-height:40px;
+  padding:8px 12px;
+  border:1px solid var(--border-strong);
+  border-radius:6px;
+  background:var(--surface);
+  color:var(--text-secondary);
+  font:12px var(--font-sans);
+}
+.system-report-close:hover {
+  background:var(--surface-subtle);
+  color:var(--text);
+}
+#page-reports .report-content {
+  margin:18px 0 0;
+  padding:0;
+  border:0;
+  background:none;
+  font-size:13px;
+  line-height:1.9;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  max-height:70dvh;
+}
+.system-report-workspace.is-reading {
+  display:grid;
+  grid-template-columns:minmax(300px,.8fr) minmax(0,1.35fr);
+  gap:20px;
+  align-items:start;
+}
+#page-reports .is-reading #reports-list {
+  grid-template-columns:minmax(0,1fr);
+}
+#page-reports .is-reading .system-report-catalog {
+  max-height:calc(100dvh - 110px);
+  overflow:auto;
+  padding-right:4px;
+  overscroll-behavior:contain;
+}
+#page-reports .is-reading .report-card {
+  padding:16px;
+}
+#page-reports .is-reading .report-card .card-heading {
+  flex-wrap:wrap;
+}
+
+/* Settings retain the original controls and persistence, with the same sheet detail as integrations. */
+#page-settings .settings-layout {
+  max-width:1180px;
+  grid-template-columns:minmax(0,1.8fr) minmax(270px,1fr);
+  gap:20px;
+}
+#page-settings #display-settings {
+  overflow:clip;
+  border-radius:10px;
+}
+#page-settings .settings-section-title {
+  padding:20px 24px;
+  font-size:15px;
+}
+#page-settings .setting-row {
+  padding:24px;
+  gap:20px;
+}
+#page-settings .setting-row select {
+  width:100%;
+  font-size:13px;
+}
+#page-settings .settings-save {
+  min-height:88px;
+}
+#page-settings #settings-feedback {
+  font-size:12px;
+  line-height:1.7;
+}
+#page-settings .settings-side > .card {
+  padding:22px;
+  border-radius:10px;
+}
+#page-settings .settings-side p {
+  font-size:13px;
+}
+#page-settings .density-sample {
+  margin-top:20px;
+}
+
+@media(max-width:1120px) {
+  .system-health-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .system-report-workspace.is-reading { grid-template-columns:minmax(0,1fr); }
+  #page-reports .is-reading .system-report-catalog { max-height:350px; padding-right:0; }
+  #page-reports .is-reading #reports-list { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  #page-settings .settings-layout { grid-template-columns:minmax(0,1fr); }
+}
+@media(max-width:760px) {
+  #page-sources #sources-grid,#page-data #data-center-grid { grid-template-columns:minmax(0,1fr); }
+  #page-sources .source-card { padding:18px; }
+  :is(#page-llm,#page-wecom) .system-config-row { grid-template-columns:minmax(0,1fr); gap:10px; padding:18px; }
+  .system-health-grid { gap:12px; }
+  .system-health-fact { padding:16px; }
+  .system-health-fact strong { font-size:18px; }
+  #page-reports #reports-list,#page-reports .is-reading #reports-list { grid-template-columns:minmax(0,1fr); }
+  #page-reports .report-card,#page-reports .report-viewer { padding:18px; }
+  #page-reports .report-card .card-heading { flex-wrap:wrap; }
+  #page-reports .report-viewer-title { padding-right:0; padding-top:46px; font-size:18px; }
+  .system-report-close { right:16px; top:16px; }
+  #page-settings .setting-row,#page-settings .settings-save,#page-settings .settings-section-title { padding:18px; }
+  #page-settings .setting-row { grid-template-columns:minmax(0,1fr); }
+}
+@media(max-width:420px) {
+  .system-health-grid { grid-template-columns:minmax(0,1fr); }
+}
+@media(pointer:coarse) {
+  #page-reports .report-filter,.system-report-close { min-height:44px; }
+}
