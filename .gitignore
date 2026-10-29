@@ -244,3 +244,10 @@
 !/docs/images/ui-v3-overview-nav.jpg
 !/docs/images/ui-v3-news-nav.jpg
 !/docs/images/ui-v3-picks-nav.jpg
+
+# Reviewed system documentation.
+!/docs/README.md
+!/docs/SYSTEM_OVERVIEW.md
+!/docs/API.md
+!/docs/VALIDATION.md
+!/docs/ROADMAP.md

@@ -1,18 +1,29 @@
-# Public export privacy notes
+# 公开范围与发布记录
 
-This source preview was prepared from the working project with a file allowlist. It contains no production `.env`, LLM profiles, personal accounts, current holdings, trade ledgers, runtime state, private project memories, audio, transcripts, raw news corpus, internal review packages, or browser local-storage exports. No screenshots are included.
+## 分发内容
 
-Strategy names and legacy participant identifiers are project labels. The six public strategy documents summarize the project contracts; original role narratives and long-form source material are not distributed. References to public figures do not imply involvement or endorsement.
+公开仓库采用逐文件白名单，包括主要源码、配置样例、工作台组件、有限模型资源、隔离测试及极小历史价格样本。配置中的凭证字段为空。
 
-The included model tree and calibrator contain learned model parameters, not personal account records. The calibrator was inspected with an allowlist of expected NumPy/joblib/scikit-learn classes. This inspection is not a guarantee that arbitrary pickle files are safe to load.
+不分发生产 `.env`、连接配置、私人账户/持仓、交易账本、数据库、赛季运行状态、原始音频/转录、完整新闻语料、内部审查材料或浏览器本地记录。原开发 Git 历史未迁入公开仓库。
 
-Private machine paths and the owner's in-product alias were removed from this copy. The HTTP entrypoints in this copy bind to loopback by default. The original working installation has not been modified. No original Git history or production season state is copied.
+角色名称与参与者 ID 为历史接口标签，不表示相关人物参与或背书。公开策略文档为工程合同摘要，不包含原始长篇材料。
 
-Configuration examples have empty credential fields. Test files contain clearly fictitious values used to verify credential and URL redaction; those are not usable credentials. A documentation-range IP is used for remote-client test fixtures.
+模型树与校准器保存学习参数。发布时对校准器的预期 NumPy/joblib/scikit-learn 对象类别和字节进行检查；该检查不适用于任意外部 pickle 文件。
 
-The public preview now has a standalone entrypoint, a tiny historical market sample and a tested core replay. Its supported checks run without a private season. A separate final privacy/Git-object scan and final release-artifact verification are still required before publication. Existing live trading and data-update defects are not fixed by this preparation. No profitability or forward-validation claim is made.
+README 截图来自合成公开界面，经过逐图检查与 SHA256 固定，不包含私人行情研究或账户内容。
 
+## 运行边界
 
-## 2026-10-29 — Unified UI v3-r3
+公开预览使用独立入口和回环地址，启动前屏蔽私有配置及继承凭证。界面合成、历史回放和无数据聚合使用不同的数据路径，不启动正式赛季或实盘交易。
 
-The current main branch includes all 18 updated workbench pages and the latest home/news/picks refinements. `/demo` uses the actual current component source with clearly labeled synthetic fixtures; `/v7` preserves unavailable states and `/replay` retains the historical hypothetical fill demo. README screenshots are captured from the public specimen, with no private ledgers, holdings, news corpus or credentials. The original `v0.1-preview` tag remains unchanged.
+发布检查覆盖工作目录、全部本地 Git 对象、历史文件与提交身份，并结合独立 Gitleaks 扫描。检查范围及限制见[隐私说明](PRIVACY.md)。许可范围见[README](../README.md#使用范围与许可)。
+
+## 发布记录
+
+| 日期 | 内容 |
+|---|---|
+| 2026-10-26 | 公开源码初版、无私有状态启动、极小历史样本及隔离回放；保留 `v0.1-preview` 标签 |
+| 2026-10-27 | 数据逐日恢复、有限请求预算、持仓退出与开仓研究解耦、成功成交投影 |
+| 2026-10-29 | v3-r3 界面与独立合成示例，更新公开截图；补充系统、架构、API、验证及维护文档 |
+
+历史标签保留原始内容；当前支持范围以主分支文档与对应提交的 CI 为准。文档更新不改变交易、模型或正式赛季语义。
