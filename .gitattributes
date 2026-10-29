@@ -4,3 +4,5 @@ examples/historical_bars.json -text
 scripts/datasource/date_effective_universe_v2.py -text
 scripts/datasource/completeness.py -text
 scripts/datasource/universe_trust_boundary.py -text
+docs/diagrams/research-workflow.svg -text
+docs/diagrams/system-architecture.svg -text
