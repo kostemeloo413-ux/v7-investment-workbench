@@ -6,3 +6,4 @@ python-dotenv==1.2.3
 tzdata==2026.3
 requests==2.34.2
 PyYAML==6.0.3
+python-multipart==0.0.20
