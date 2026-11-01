@@ -18,6 +18,7 @@ import sys
 import json
 import threading
 import datetime
+from contextlib import asynccontextmanager
 
 _BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 for p in (_BASE, os.path.join(_BASE, 'scripts')):
@@ -57,7 +58,33 @@ def _trigger_job(name):
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title='AI多博主量化共识交易工作台 · 守护服务', docs_url=None, redoc_url=None)
+    # Phase Lab-1: 检查是否启用博主实验室原生集成模块
+    lab_enabled = os.environ.get("V7_BLOGGER_LAB_ENABLED", "0").strip().lower() in ("1", "true", "yes")
+    lab_runtime = None
+    if lab_enabled:
+        from blogger_lab.runtime import BloggerLabRuntime
+        from blogger_lab.router import create_blogger_lab_router
+        lab_root = os.environ.get("V7_BLOGGER_LAB_ROOT")
+        lab_runtime = BloggerLabRuntime(lab_root=lab_root)
+
+    @asynccontextmanager
+    async def lifespan(app_inst: FastAPI):
+        if lab_runtime:
+            lab_runtime.start()
+        yield
+        if lab_runtime:
+            lab_runtime.shutdown()
+
+    app = FastAPI(
+        title='AI多博主量化共识交易工作台 · 守护服务',
+        docs_url=None,
+        redoc_url=None,
+        lifespan=lifespan if lab_enabled else None
+    )
+
+    if lab_enabled and lab_runtime:
+        app.state.blogger_lab_runtime = lab_runtime
+        app.include_router(create_blogger_lab_router(lab_runtime))
 
     # Phase UI-2: 挂载 V7 只读聚合 View Model 路由
     from daemon.v7_api import v7_router

@@ -418,6 +418,14 @@ const V7App = {
 
   switchPage(pageId, updateHash = true) {
     if (!document.getElementById(pageId)) return;
+    const prevPageId = this.currentPage || (document.querySelector('.page-view.active')?.id);
+    if (prevPageId && prevPageId !== pageId) {
+      if (prevPageId === 'page-blogger-lab') {
+        window.BloggerLabDomain?.onLeave?.();
+      }
+    }
+    this.currentPage = pageId;
+
     document.querySelectorAll('.nav-item').forEach((item) => {
       item.classList.toggle('active', item.dataset.page === pageId);
     });
@@ -442,6 +450,9 @@ const V7App = {
       'page-wecom': () => this.refreshIntegrations(),
       'page-reports': () => this.refreshReports(),
       'page-health': () => this.refreshOverview(),
+      'page-blogger-lab': () => {
+        window.BloggerLabDomain?.onEnter?.();
+      },
     };
     refreshByPage[pageId]?.();
   },
@@ -1829,4 +1840,5 @@ const V7App = {
   },
 };
 
+window.V7App = V7App;
 window.addEventListener('DOMContentLoaded', () => V7App.init());

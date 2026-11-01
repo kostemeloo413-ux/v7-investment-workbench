@@ -1,0 +1,562 @@
+/* ==========================================================================
+   V7 博主量化实验室样式表 (Blogger Lab Scoped CSS)
+   严格限定在 #page-blogger-lab 与 .blogger-lab-root 作用域内
+   杜绝全局样式泄漏与主工作台变量污染
+   A股配色铁律: 红涨(#dc2626) 绿跌(#166534)
+   ========================================================================== */
+
+#page-blogger-lab,
+.blogger-lab-root {
+  --lab-color-up: #dc2626;
+  --lab-color-up-bg: #fef2f2;
+  --lab-color-down: #166534;
+  --lab-color-down-bg: #f0fdf4;
+  --lab-color-unknown: #6b7280;
+  --lab-color-unknown-bg: #f3f4f6;
+  --lab-color-primary: #2563eb;
+  --lab-color-primary-hover: #1d4ed8;
+  --lab-color-border: #e5e7eb;
+  --lab-color-surface: #ffffff;
+  --lab-color-bg: #f8fafc;
+  --lab-color-text: #111827;
+  --lab-color-text-sub: #4b5563;
+  --lab-radius: 8px;
+}
+
+/* 独立调试页顶栏 (仅在 .blogger-lab-root.standalone-shell 中展示) */
+.blogger-lab-root .standalone-topbar {
+  background: var(--lab-color-surface);
+  border-bottom: 1px solid var(--lab-color-border);
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* 原生工作台顶部工具栏与分身选择器 */
+#page-blogger-lab .lab-heading-toolbar,
+.blogger-lab-root .lab-heading-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+#page-blogger-lab .lab-persona-bar,
+.blogger-lab-root .lab-persona-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--lab-color-surface);
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--lab-color-border);
+}
+
+#page-blogger-lab .lab-persona-select,
+.blogger-lab-root .lab-persona-select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--lab-color-border);
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 170px;
+  color: var(--lab-color-text);
+}
+
+/* 5步导航标签栏 */
+#page-blogger-lab .nav-tabs,
+.blogger-lab-root .nav-tabs {
+  display: flex;
+  background: var(--lab-color-surface);
+  border: 1px solid var(--lab-color-border);
+  border-radius: var(--lab-radius);
+  padding: 4px 8px;
+  gap: 4px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+#page-blogger-lab .nav-tab,
+.blogger-lab-root .nav-tab {
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lab-color-text-sub);
+  cursor: pointer;
+  border-radius: 6px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#page-blogger-lab .nav-tab:hover,
+.blogger-lab-root .nav-tab:hover {
+  background: #f1f5f9;
+  color: var(--lab-color-text);
+}
+
+#page-blogger-lab .nav-tab.active,
+.blogger-lab-root .nav-tab.active {
+  color: var(--lab-color-primary);
+  background: #eff6ff;
+  border-bottom-color: var(--lab-color-primary);
+  font-weight: 600;
+}
+
+#page-blogger-lab .nav-tab .step-badge,
+.blogger-lab-root .nav-tab .step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+}
+
+#page-blogger-lab .nav-tab.active .step-badge,
+.blogger-lab-root .nav-tab.active .step-badge {
+  background: var(--lab-color-primary);
+  color: #fff;
+}
+
+/* 步骤容器与面板切换 */
+#page-blogger-lab .step-panel,
+.blogger-lab-root .step-panel {
+  display: none;
+}
+
+#page-blogger-lab .step-panel.active,
+.blogger-lab-root .step-panel.active {
+  display: block;
+}
+
+/* 卡片样式 */
+#page-blogger-lab .card,
+.blogger-lab-root .card {
+  background: var(--lab-color-surface);
+  border: 1px solid var(--lab-color-border);
+  border-radius: var(--lab-radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+#page-blogger-lab .card-header,
+.blogger-lab-root .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+#page-blogger-lab .card-title,
+.blogger-lab-root .card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--lab-color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+#page-blogger-lab .card-desc,
+.blogger-lab-root .card-desc {
+  font-size: 13px;
+  color: var(--lab-color-text-sub);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* 栅格布局 */
+#page-blogger-lab .grid-2,
+.blogger-lab-root .grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  #page-blogger-lab .grid-2,
+  .blogger-lab-root .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 表单组件 */
+#page-blogger-lab .form-group,
+.blogger-lab-root .form-group {
+  margin-bottom: 16px;
+}
+
+#page-blogger-lab .form-label,
+.blogger-lab-root .form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lab-color-text-sub);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#page-blogger-lab .form-input,
+#page-blogger-lab .form-textarea,
+#page-blogger-lab .form-select,
+.blogger-lab-root .form-input,
+.blogger-lab-root .form-textarea,
+.blogger-lab-root .form-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--lab-color-border);
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+  color: var(--lab-color-text);
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+#page-blogger-lab .form-input:focus,
+#page-blogger-lab .form-textarea:focus,
+#page-blogger-lab .form-select:focus,
+.blogger-lab-root .form-input:focus,
+.blogger-lab-root .form-textarea:focus,
+.blogger-lab-root .form-select:focus {
+  outline: none;
+  border-color: var(--lab-color-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+#page-blogger-lab .form-hint,
+.blogger-lab-root .form-hint {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* 按钮规范 */
+#page-blogger-lab .btn,
+.blogger-lab-root .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  gap: 6px;
+  text-decoration: none;
+}
+
+#page-blogger-lab .btn-primary,
+.blogger-lab-root .btn-primary {
+  background: var(--lab-color-primary);
+  color: #fff;
+  border-color: var(--lab-color-primary);
+}
+
+#page-blogger-lab .btn-primary:hover,
+.blogger-lab-root .btn-primary:hover {
+  background: var(--lab-color-primary-hover);
+  border-color: var(--lab-color-primary-hover);
+}
+
+#page-blogger-lab .btn-secondary,
+.blogger-lab-root .btn-secondary {
+  background: #f1f5f9;
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+#page-blogger-lab .btn-secondary:hover,
+.blogger-lab-root .btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+#page-blogger-lab .btn-danger,
+.blogger-lab-root .btn-danger {
+  background: var(--lab-color-up);
+  color: #fff;
+  border-color: var(--lab-color-up);
+}
+
+#page-blogger-lab .btn-success,
+.blogger-lab-root .btn-success {
+  background: var(--lab-color-down);
+  color: #fff;
+  border-color: var(--lab-color-down);
+}
+
+#page-blogger-lab .btn:disabled,
+.blogger-lab-root .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 状态徽章 */
+#page-blogger-lab .badge,
+.blogger-lab-root .badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+#page-blogger-lab .badge-ready,
+#page-blogger-lab .badge-succeeded,
+#page-blogger-lab .badge-completed,
+.blogger-lab-root .badge-ready,
+.blogger-lab-root .badge-succeeded,
+.blogger-lab-root .badge-completed {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+#page-blogger-lab .badge-running,
+#page-blogger-lab .badge-building,
+.blogger-lab-root .badge-running,
+.blogger-lab-root .badge-building {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+#page-blogger-lab .badge-partial,
+.blogger-lab-root .badge-partial {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+#page-blogger-lab .badge-failed,
+#page-blogger-lab .badge-blocked,
+#page-blogger-lab .badge-interrupted,
+.blogger-lab-root .badge-failed,
+.blogger-lab-root .badge-blocked,
+.blogger-lab-root .badge-interrupted {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+#page-blogger-lab .badge-unresolved,
+.blogger-lab-root .badge-unresolved {
+  background: #ffedd5;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+#page-blogger-lab .badge-gray,
+.blogger-lab-root .badge-gray {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+#page-blogger-lab .badge-primary,
+.blogger-lab-root .badge-primary {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+/* A股红涨绿跌铁律 */
+#page-blogger-lab .color-up,
+.blogger-lab-root .color-up {
+  color: var(--lab-color-up) !important;
+  font-weight: 600;
+}
+
+#page-blogger-lab .color-down,
+.blogger-lab-root .color-down {
+  color: var(--lab-color-down) !important;
+  font-weight: 600;
+}
+
+#page-blogger-lab .color-unknown,
+.blogger-lab-root .color-unknown {
+  color: var(--lab-color-unknown) !important;
+  font-weight: 500;
+}
+
+/* 表格组件 */
+#page-blogger-lab .table-container,
+.blogger-lab-root .table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--lab-color-border);
+  border-radius: 6px;
+}
+
+#page-blogger-lab table,
+.blogger-lab-root table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+#page-blogger-lab th,
+.blogger-lab-root th {
+  background: #f8fafc;
+  padding: 10px 14px;
+  font-weight: 600;
+  color: #475569;
+  border-bottom: 1px solid var(--lab-color-border);
+  white-space: nowrap;
+}
+
+#page-blogger-lab td,
+.blogger-lab-root td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+#page-blogger-lab tr:last-child td,
+.blogger-lab-root tr:last-child td {
+  border-bottom: none;
+}
+
+#page-blogger-lab tr:hover td,
+.blogger-lab-root tr:hover td {
+  background: #fbfcfe;
+}
+
+/* 进度条 */
+#page-blogger-lab .progress-bar-container,
+.blogger-lab-root .progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+#page-blogger-lab .progress-bar,
+.blogger-lab-root .progress-bar {
+  height: 100%;
+  background: var(--lab-color-primary);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* 弹窗 / 浮层 */
+#page-blogger-lab .modal-overlay,
+.blogger-lab-root .modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+#page-blogger-lab .modal-overlay.active,
+.blogger-lab-root .modal-overlay.active {
+  display: flex;
+}
+
+#page-blogger-lab .modal-box,
+.blogger-lab-root .modal-box {
+  background: #fff;
+  border-radius: 8px;
+  max-width: 650px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--lab-color-border);
+}
+
+#page-blogger-lab .modal-header,
+.blogger-lab-root .modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--lab-color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#page-blogger-lab .modal-body,
+.blogger-lab-root .modal-body {
+  padding: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+#page-blogger-lab .modal-footer,
+.blogger-lab-root .modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--lab-color-border);
+  text-align: right;
+}
+
+#page-blogger-lab .excerpt-highlight,
+.blogger-lab-root .excerpt-highlight {
+  background: #fef08a;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-weight: 600;
+  color: #854d0e;
+}
+
+/* 提示与报警框 */
+#page-blogger-lab .notice-box,
+.blogger-lab-root .notice-box {
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+#page-blogger-lab .notice-info,
+.blogger-lab-root .notice-info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+#page-blogger-lab .notice-warning,
+.blogger-lab-root .notice-warning {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+#page-blogger-lab .notice-error,
+.blogger-lab-root .notice-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}

@@ -255,3 +255,28 @@
 # Reviewed static documentation diagrams, pinned by the publication guard.
 !/docs/diagrams/research-workflow.svg
 !/docs/diagrams/system-architecture.svg
+
+# Reviewed Blogger Lab integration modules and synthetic preview
+!/scripts/blogger_lab/__init__.py
+!/scripts/blogger_lab/api.py
+!/scripts/blogger_lab/ingest.py
+!/scripts/blogger_lab/knowledge.py
+!/scripts/blogger_lab/llm.py
+!/scripts/blogger_lab/market.py
+!/scripts/blogger_lab/paper.py
+!/scripts/blogger_lab/replay.py
+!/scripts/blogger_lab/router.py
+!/scripts/blogger_lab/runtime.py
+!/scripts/blogger_lab/scan.py
+!/scripts/blogger_lab/schemas.py
+!/scripts/blogger_lab/server.py
+!/scripts/blogger_lab/service.py
+!/scripts/blogger_lab/store.py
+!/scripts/blogger_lab/strategy.py
+!/workbench_v7/blogger_lab.html
+!/workbench_v7/css/blogger_lab.css
+!/workbench_v7/js/blogger_lab.js
+!/workbench_v7/js/blogger_lab_entry.js
+!/examples/blogger_lab/01_synthetic_researcher_sample.txt
+!/tests/test_blogger_lab.py
+!/docs/BLOGGER_LAB.md

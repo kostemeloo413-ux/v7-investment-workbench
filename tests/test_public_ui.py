@@ -47,7 +47,7 @@ class Assets(HTMLParser):
 def test_every_resource_used_by_the_current_demo_is_distributed():
     with TestClient(create_preview_app()) as client:
         assets = Assets(client.get('/demo').text).urls
-        assert len(assets) == 19
+        assert len(assets) == 22
         for url in assets:
             assert url.startswith('/workbench_v7/')
             assert client.get(url).status_code == 200, url
