@@ -2,7 +2,8 @@
 """
 tests/test_blogger_lab.py
 Public preview unit & integration test suite for Blogger Lab.
-Verifies default-off behavior, explicit-root initialization, security gates, DSL schemas, and T+1 paper trading mechanics.
+Verifies public preview factory, default-off behavior, explicit-root initialization,
+security gates, DSL schemas, synthetic upload, and T+1 paper trading mechanics.
 """
 
 import os
@@ -20,54 +21,127 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 
-def test_blogger_lab_default_disabled(monkeypatch):
-    """Ensure Blogger Lab routes are not mounted when V7_BLOGGER_LAB_ENABLED is 0 or unset."""
+def test_public_preview_blogger_lab_disabled(monkeypatch, tmp_path):
+    """
+    Ensure Blogger Lab routes are not mounted in scripts.public_preview:create_preview_app
+    when V7_BLOGGER_LAB_ENABLED is 0 or unset. Root directory must not be created.
+    """
     monkeypatch.setenv("V7_BLOGGER_LAB_ENABLED", "0")
-    from daemon.app import create_app
-    app = create_app()
-    client = TestClient(app)
+    never_created_root = tmp_path / "never_created_lab_root"
+    monkeypatch.setenv("V7_BLOGGER_LAB_ROOT", str(never_created_root))
 
-    # Core health should succeed
-    res_health = client.get("/api/health")
-    assert res_health.status_code == 200
+    from scripts.public_preview import create_preview_app
+    app = create_preview_app()
 
-    # Blogger lab endpoint must return 404
-    res_lab = client.get("/api/blogger-lab/personas")
-    assert res_lab.status_code == 404
+    with TestClient(app) as client:
+        # Standard preview pages and endpoints function normally
+        res_health = client.get("/api/health")
+        assert res_health.status_code == 200
+        assert res_health.json().get("mode") == "PUBLIC_READ_ONLY_PREVIEW"
+
+        res_demo = client.get("/demo")
+        assert res_demo.status_code == 200
+
+        res_replay = client.get("/replay")
+        assert res_replay.status_code == 200
+
+        res_v7 = client.get("/v7")
+        assert res_v7.status_code == 200
+
+        # Lab endpoint must return 404
+        res_lab = client.get("/api/blogger-lab/personas")
+        assert res_lab.status_code == 404
+
+        # Non-GET requests return 403 READ_ONLY_PREVIEW
+        res_post_run = client.post("/api/run/daily_review")
+        assert res_post_run.status_code == 403
+        assert res_post_run.json().get("status") == "READ_ONLY_PREVIEW"
+
+        res_post_lab = client.post("/api/blogger-lab/personas", json={"name": "test"})
+        assert res_post_lab.status_code == 403
+
+    # Storage root must NOT be initialized or created on disk
+    assert not never_created_root.exists()
 
 
-def test_blogger_lab_enabled_routes_and_security(monkeypatch):
-    """Ensure Blogger Lab mounts and enforces loopback security gate when enabled."""
-    tmpdir = tempfile.mkdtemp(prefix="test_blogger_lab_root_")
-    try:
-        monkeypatch.setenv("V7_BLOGGER_LAB_ENABLED", "1")
-        monkeypatch.setenv("V7_BLOGGER_LAB_ROOT", tmpdir)
+def test_public_preview_blogger_lab_enabled_and_security(monkeypatch, tmp_path):
+    """
+    Ensure scripts.public_preview:create_preview_app mounts Blogger Lab when enabled,
+    enforces loopback/anti-proxy/CORS security gates, permits synthetic corpus upload,
+    keeps non-lab write requests 403, and releases runtime on exit.
+    """
+    lab_root = tmp_path / "preview_lab_root"
+    monkeypatch.setenv("V7_BLOGGER_LAB_ENABLED", "1")
+    monkeypatch.setenv("V7_BLOGGER_LAB_ROOT", str(lab_root))
 
-        from daemon.app import create_app
-        app = create_app()
+    from scripts.public_preview import create_preview_app
+    app = create_preview_app()
 
-        with TestClient(app) as client:
-            # 1. External proxy injection -> 403 Forbidden
-            res_proxy = client.get("/api/blogger-lab/personas", headers={"X-Forwarded-For": "203.0.113.195"})
-            assert res_proxy.status_code == 403
+    with TestClient(app) as client:
+        # 1. Non-lab write endpoints remain strictly 403 Forbidden
+        res_non_lab_write = client.post("/api/run/daily_review")
+        assert res_non_lab_write.status_code == 403
+        assert res_non_lab_write.json().get("status") == "READ_ONLY_PREVIEW"
 
-            # 2. Cross-origin / untrusted origin -> 403 Forbidden
-            res_origin = client.get("/api/blogger-lab/personas", headers={"Origin": "http://untrusted-site.org"})
-            assert res_origin.status_code == 403
+        # 2. External proxy injection -> 403 Forbidden
+        res_proxy = client.get("/api/blogger-lab/personas", headers={"X-Forwarded-For": "203.0.113.195"})
+        assert res_proxy.status_code == 403
 
-            # 3. Legitimate loopback request -> 200 OK, empty personas
-            res_ok = client.get("/api/blogger-lab/personas")
-            assert res_ok.status_code == 200
-            data = res_ok.json()
-            assert data.get("status") == "ok"
-            assert data.get("data") == []
+        res_proxy_post = client.post(
+            "/api/blogger-lab/personas",
+            json={"name": "proxy_user"},
+            headers={"X-Forwarded-For": "203.0.113.195"}
+        )
+        assert res_proxy_post.status_code == 403
 
-        # Explicitly shutdown runtime to release SQLite locks
-        if hasattr(app.state, "blogger_lab_runtime") and app.state.blogger_lab_runtime:
-            app.state.blogger_lab_runtime.shutdown()
-    finally:
-        import shutil
-        shutil.rmtree(tmpdir, ignore_errors=True)
+        # 3. Cross-origin / untrusted origin -> 403 Forbidden
+        res_origin = client.get("/api/blogger-lab/personas", headers={"Origin": "http://untrusted-site.org"})
+        assert res_origin.status_code == 403
+
+        res_origin_null = client.get("/api/blogger-lab/personas", headers={"Origin": "null"})
+        assert res_origin_null.status_code == 403
+
+        # 4. Legitimate loopback request -> 200 OK, empty personas initially
+        res_ok = client.get("/api/blogger-lab/personas")
+        assert res_ok.status_code == 200
+        data = res_ok.json()
+        assert data.get("status") == "ok"
+        assert data.get("data") == []
+
+        # 5. Legitimate loopback POST persona registration -> 200 OK
+        res_create = client.post(
+            "/api/blogger-lab/personas",
+            json={"name": "公开合成研究员", "description": "用于公开环境验证"}
+        )
+        assert res_create.status_code == 200
+        persona_body = res_create.json()
+        assert persona_body.get("status") == "ok"
+        persona = persona_body["data"]
+        persona_id = persona["id"]
+        assert persona["name"] == "公开合成研究员"
+
+        # 6. Upload synthetic TXT sample note -> 200 OK
+        sample_path = REPO_ROOT / "examples" / "blogger_lab" / "01_synthetic_researcher_sample.txt"
+        assert sample_path.exists(), f"Sample file not found at {sample_path}"
+        content_bytes = sample_path.read_bytes()
+
+        res_upload = client.post(
+            f"/api/blogger-lab/personas/{persona_id}/batches",
+            files=[("files", ("01_synthetic_researcher_sample.txt", content_bytes, "text/plain"))],
+            data={"source_date": "2026-11-01"}
+        )
+        assert res_upload.status_code == 200
+        batch_body = res_upload.json()
+        assert batch_body.get("status") == "ok"
+        upload_data = batch_body["data"]
+        assert upload_data["batch"]["persona_id"] == persona_id
+        assert upload_data["chunks_count"] > 0
+
+    # 7. Lifespan exit releases runtime and file locks
+    runtime = getattr(app.state, "blogger_lab_runtime", None)
+    assert runtime is not None
+    assert runtime.status == "SHUTDOWN"
+    assert runtime.is_locked is False
 
 
 def test_blogger_lab_schemas_and_dsl():

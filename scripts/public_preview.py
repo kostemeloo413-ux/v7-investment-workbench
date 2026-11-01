@@ -2,12 +2,19 @@
 from __future__ import annotations
 
 import argparse
+from contextlib import asynccontextmanager
 import json
 import os
 from pathlib import Path
 import sys
+from typing import Optional
 
 ROOT = Path(__file__).resolve().parents[1]
+try:
+    from dotenv import load_dotenv
+    load_dotenv(ROOT / '.env')
+except ImportError:
+    pass
 os.environ['V7_PUBLIC_PREVIEW'] = '1'
 if str(ROOT / 'scripts') not in sys.path:
     sys.path.insert(0, str(ROOT / 'scripts'))
@@ -20,13 +27,43 @@ from scripts.public_demo import run_demo
 from scripts.public_ui_fixture import ui_fixture
 
 
-def create_preview_app():
-    app = FastAPI(title='V7 public source preview', docs_url=None, redoc_url=None)
+def create_preview_app(lab_root: Optional[str] = None) -> FastAPI:
+    lab_enabled = os.environ.get("V7_BLOGGER_LAB_ENABLED", "0").strip().lower() in ("1", "true", "yes")
+    lab_runtime = None
+    if lab_enabled:
+        from blogger_lab.runtime import BloggerLabRuntime
+        from blogger_lab.router import create_blogger_lab_router
+        effective_lab_root = lab_root or os.environ.get("V7_BLOGGER_LAB_ROOT") or str(ROOT / "data" / "blogger_lab")
+        lab_runtime = BloggerLabRuntime(lab_root=effective_lab_root)
+
+    @asynccontextmanager
+    async def lifespan(app_inst: FastAPI):
+        if lab_runtime:
+            lab_runtime.start()
+        yield
+        if lab_runtime:
+            lab_runtime.shutdown()
+
+    app = FastAPI(
+        title='V7 public source preview',
+        docs_url=None,
+        redoc_url=None,
+        lifespan=lifespan if lab_enabled else None
+    )
+
+    if lab_enabled and lab_runtime:
+        app.state.blogger_lab_runtime = lab_runtime
+        app.include_router(create_blogger_lab_router(lab_runtime))
 
     @app.middleware('http')
     async def read_only_preview(request: Request, call_next):
+        is_lab_route = request.url.path == '/api/blogger-lab' or request.url.path.startswith('/api/blogger-lab/')
         if request.method not in {'GET', 'HEAD'}:
-            return JSONResponse({'status': 'READ_ONLY_PREVIEW', 'detail': 'This preview has no task, configuration or trading write API.'}, status_code=403)
+            if not (lab_enabled and is_lab_route):
+                return JSONResponse(
+                    {'status': 'READ_ONLY_PREVIEW', 'detail': 'This preview has no task, configuration or trading write API.'},
+                    status_code=403
+                )
         response = await call_next(request)
         response.headers['Cache-Control'] = 'no-store'
         response.headers['X-Content-Type-Options'] = 'nosniff'

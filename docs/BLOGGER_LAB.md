@@ -46,6 +46,54 @@ All `/api/blogger-lab/*` routes enforce strict local access controls:
 
 ## Quickstart & Verification
 
+### Running the Public Preview with Blogger Lab Enabled
+
+The actual public preview entry point is `python -m scripts.public_preview` (factory: `scripts.public_preview:create_preview_app`), serving on `http://127.0.0.1:8020` by default.
+The preview server loads configuration from environment variables or a local `.env` file (copied from `.env.example`).
+
+#### 1. Executable Enablement Commands
+
+**Windows PowerShell**:
+```powershell
+$env:V7_BLOGGER_LAB_ENABLED="1"
+$env:V7_BLOGGER_LAB_ROOT="./data/blogger_lab"
+python -m scripts.public_preview --port 8020
+```
+
+**Windows Command Prompt (cmd.exe)**:
+```cmd
+set V7_BLOGGER_LAB_ENABLED=1
+set V7_BLOGGER_LAB_ROOT=./data/blogger_lab
+python -m scripts.public_preview --port 8020
+```
+
+**Linux / macOS (Bash / Zsh)**:
+```bash
+V7_BLOGGER_LAB_ENABLED=1 V7_BLOGGER_LAB_ROOT=./data/blogger_lab python -m scripts.public_preview --port 8020
+```
+
+#### 2. Launch via `.env` File
+Copy `.env.example` to `.env` in the repository root and set:
+```ini
+V7_BLOGGER_LAB_ENABLED=1
+V7_BLOGGER_LAB_ROOT=./data/blogger_lab
+```
+Then start the preview server:
+```bash
+python -m scripts.public_preview --port 8020
+```
+Navigate to `http://127.0.0.1:8020/v7#page-blogger-lab` or `http://127.0.0.1:8020/demo`.
+
+#### 3. Honest Missing Dependencies & Boundary Disclosure
+
+- **LLM API Credentials**: Without configuring `DEEPSEEK_API_KEY` or `LLM_API_KEY` in `.env`, calling the live extraction endpoint will report an honest configuration error. Persona registration, corpus batch upload, text slicing, and DSL strategy formulation work completely offline.
+- **Market Data**: The public release distribution does not bundle private production market databases (`data/market/market.db`). Live universe scans will honestly indicate missing market evidence. Offline mock scenarios (such as `standard_t1_cycle`) are provided to test the deterministic T+1 order matching and fee accounting offline.
+- **Preview Isolation Boundary**: The public preview server does not start trading daemons, background schedulers, or watchdogs. All general preview write endpoints (`/api/run/*`) remain strictly 403 Forbidden (`READ_ONLY_PREVIEW`). Only `/api/blogger-lab/*` write operations are allowed locally, protected by loopback socket and same-origin validation.
+
+---
+
+### Synthetic Test Sample & Automated Tests
+
 A synthetic, fictional sample note is provided for verification:
 ```
 examples/blogger_lab/01_synthetic_researcher_sample.txt
