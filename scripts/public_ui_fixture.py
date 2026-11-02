@@ -8,7 +8,7 @@ import math
 
 MODE = 'SYNTHETIC_UI_DEMO'
 ROLE_IDS = ['P-LIAO-XIAOAI', 'P-COOL', 'P-YINWENTAO', 'P-HANSHU', 'P-RULE-QUANT', 'P-AI-QUANT']
-ROLE_NAMES = ['廖小爱', '酷儿', '殷文涛', '韩叔', '规则量化派', 'AI Quant']
+ROLE_NAMES = ['某爱', '某库', '某涛', '某韩', '规则量化派', 'AI Quant']
 
 
 def ui_fixture(endpoint, now=None):

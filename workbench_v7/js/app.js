@@ -90,7 +90,7 @@ const V7MarketEnvironment = {
 
 /* Phase 3: opinion display only. No signal, plan or permission is changed. */
 const V7PicksPresentation = {
-  roles: [['P-LIAO-XIAOAI', '廖小爱'], ['P-COOL', '酷儿'], ['P-YINWENTAO', '殷文涛'], ['P-HANSHU', '韩叔'], ['P-RULE-QUANT', '规则量化派']],
+  roles: [['P-LIAO-XIAOAI', '某爱'], ['P-COOL', '某库'], ['P-YINWENTAO', '某涛'], ['P-HANSHU', '某韩'], ['P-RULE-QUANT', '规则量化派']],
   actions: { BUY: '考虑买入', NO_SIGNAL: '继续观察' },
   action(value) { return Object.hasOwn(this.actions, value) ? this.actions[value] : null; },
   finite(value) { return typeof value === 'number' && Number.isFinite(value); },

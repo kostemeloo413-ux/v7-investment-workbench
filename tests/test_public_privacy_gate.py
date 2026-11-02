@@ -56,6 +56,15 @@ def test_reviewed_ui_screenshots_are_exactly_pinned_not_a_generic_image_allowanc
     assert guard.path_findings('docs/images/unreviewed.jpg', b'\xff\xd8')
 
 
+def test_historical_image_review_does_not_allow_old_bytes_in_current_worktree(monkeypatch):
+    path = 'docs/images/ui-v3-overview-nav.jpg'
+    old_bytes = b'exact previously reviewed fixture'
+    monkeypatch.setitem(guard.REVIEWED_BINARY_HISTORY, path, {hashlib.sha256(old_bytes).hexdigest()})
+    assert guard.path_findings(path, old_bytes)
+    assert guard.path_findings(path, old_bytes, historical=True) == []
+    assert guard.path_findings(path, old_bytes + b'changed', historical=True)
+
+
 def test_git_object_reader_detects_an_unreachable_blob(tmp_path):
     import subprocess
     subprocess.run(['git', 'init', '-q', '--template=', str(tmp_path)], check=True)

@@ -1,7 +1,7 @@
 /* Pure display projection. No quote collection, recommendations or permissions. */
 (function(root) {
   'use strict';
-  const roles = [['P-LIAO-XIAOAI','廖小爱'],['P-COOL','酷儿'],['P-YINWENTAO','殷文涛'],['P-HANSHU','韩叔'],['P-RULE-QUANT','规则量化']];
+  const roles = [['P-LIAO-XIAOAI','某爱'],['P-COOL','某库'],['P-YINWENTAO','某涛'],['P-HANSHU','某韩'],['P-RULE-QUANT','规则量化']];
   const finite = x => typeof x === 'number' && Number.isFinite(x);
   const code = x => typeof x === 'string' ? x.replace(/^(sh|sz|bj)\.?/i,'').replace(/\.(sh|sz|bj)$/i,'') : '';
   const day = x => typeof x === 'string' && Number.isFinite(Date.parse(x)) ? new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(x)).replaceAll('-','') : null;

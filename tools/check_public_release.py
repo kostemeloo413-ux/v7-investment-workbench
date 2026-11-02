@@ -32,12 +32,12 @@ TEXT_SUFFIXES = {'.py', '.md', '.txt', '.json', '.yaml', '.yml', '.toml', '.js',
 REVIEWED_BINARY = {
     'docs/diagrams/research-workflow.svg': '0edd2cfee6faa3c758d40af7fdd9a8936153e0446a350bbf0a1f63606ab3077f',
     'docs/diagrams/system-architecture.svg': '6537d3ef1dce6b88589cff9d68f8bfe0eb7cbe321e8d8c3108217d3a51f73875',
-    'docs/images/ui-v3-overview-nav.jpg': '87d1fac84cc019b47ae80e835da6b07231056872b50f61b46a958e287bab9ad3',
-    'docs/images/ui-v3-news-nav.jpg': '73060cd3df0416e17076cc1bc39a584155551c2bf7e149a99f45f4a9cf08a98c',
-    'docs/images/ui-v3-picks-nav.jpg': '8a611f50c9eb56dcb3fdedf6fc7f79fd053949db7d46f7e0d4cdaf6b38a20cf9',
-    'docs/images/ui-v3-overview.jpg': '33e45575fad0fc7ee9bd748cac666d23aa2690c78777dea8e7ec6e9043d238b2',
-    'docs/images/ui-v3-news.jpg': 'a374d090746d967cb9ad2775d42835b38b0ec3e33061e5ce4b1fe2fd9f078052',
-    'docs/images/ui-v3-picks.jpg': '91a9e799e10a2f7dcda50252f8f989604cdd2261c1ebec01ce75a273b937c821',
+    'docs/images/ui-v3-overview-nav.jpg': '16dd7f15cd99aa2cd0c82625b1c7413cd3ff562ac2da060080ef9103aa0c859b',
+    'docs/images/ui-v3-news-nav.jpg': 'd09473314d8ed0b0e09ada7699914f2350c2b04b8c866af9750c06a9609bea21',
+    'docs/images/ui-v3-picks-nav.jpg': '5f398af282f4417206d5bbe0e24d86458cd908754b1d9a9103700919eff1fde7',
+    'docs/images/ui-v3-overview.jpg': '16dd7f15cd99aa2cd0c82625b1c7413cd3ff562ac2da060080ef9103aa0c859b',
+    'docs/images/ui-v3-news.jpg': 'd09473314d8ed0b0e09ada7699914f2350c2b04b8c866af9750c06a9609bea21',
+    'docs/images/ui-v3-picks.jpg': '5f398af282f4417206d5bbe0e24d86458cd908754b1d9a9103700919eff1fde7',
 
     'models/ai_quant/calibrator_AIQ-V1.0.pkl': '8e6bbc3d27a155947d3b1df7bc1cd918f523dab960c081c9aa535ceba9931b9c',
 }
@@ -68,7 +68,19 @@ def findings_for(path, content, exceptions=()):
     return findings
 
 
-def path_findings(path, content):
+# Exact previously reviewed image bytes remain valid only while scanning Git history.
+# Current worktree files must always match REVIEWED_BINARY above.
+REVIEWED_BINARY_HISTORY = {
+    'docs/images/ui-v3-overview-nav.jpg': {'87d1fac84cc019b47ae80e835da6b07231056872b50f61b46a958e287bab9ad3'},
+    'docs/images/ui-v3-news-nav.jpg': {'73060cd3df0416e17076cc1bc39a584155551c2bf7e149a99f45f4a9cf08a98c'},
+    'docs/images/ui-v3-picks-nav.jpg': {'8a611f50c9eb56dcb3fdedf6fc7f79fd053949db7d46f7e0d4cdaf6b38a20cf9'},
+    'docs/images/ui-v3-overview.jpg': {'33e45575fad0fc7ee9bd748cac666d23aa2690c78777dea8e7ec6e9043d238b2'},
+    'docs/images/ui-v3-news.jpg': {'a374d090746d967cb9ad2775d42835b38b0ec3e33061e5ce4b1fe2fd9f078052'},
+    'docs/images/ui-v3-picks.jpg': {'91a9e799e10a2f7dcda50252f8f989604cdd2261c1ebec01ce75a273b937c821'},
+}
+
+
+def path_findings(path, content, *, historical=False):
     parts = Path(path).parts
     issues = []
     if not parts or parts[0] in PRIVATE_ROOTS or Path(path).name in PRIVATE_NAMES:
@@ -78,7 +90,10 @@ def path_findings(path, content):
     if len(content) > 10 * 1024 * 1024:
         issues.append({'path': path, 'rule': 'unreviewed-large-file'})
     if path in REVIEWED_BINARY:
-        if digest(content) != REVIEWED_BINARY[path]:
+        allowed = {REVIEWED_BINARY[path]}
+        if historical:
+            allowed.update(REVIEWED_BINARY_HISTORY.get(path, ()))
+        if digest(content) not in allowed:
             issues.append({'path': path, 'rule': 'binary-changed-requires-review'})
     elif Path(path).suffix not in TEXT_SUFFIXES and path not in {'.gitignore', '.gitattributes', 'LICENSE', 'NOTICE'}:
         issues.append({'path': path, 'rule': 'unreviewed-file-type'})
@@ -161,7 +176,7 @@ def check_git():
             for path in names:
                 paths_checked.add(path)
                 if not path.startswith('UNREACHABLE_BLOB:'):
-                    issues.extend(path_findings(path, content))
+                    issues.extend(path_findings(path, content, historical=True))
                 issues.extend(findings_for(path, content, exceptions))
         elif kind in {'commit', 'tag'}:
             issues.extend(findings_for('GIT_' + kind.upper() + ':' + oid, content))
