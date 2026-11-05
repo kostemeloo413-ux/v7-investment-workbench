@@ -45,7 +45,7 @@ def create_preview_app(lab_root: Optional[str] = None) -> FastAPI:
             lab_runtime.shutdown()
 
     app = FastAPI(
-        title='V7 public source preview',
+        title='知策 · public source preview',
         docs_url=None,
         redoc_url=None,
         lifespan=lifespan if lab_enabled else None
@@ -86,7 +86,10 @@ def create_preview_app(lab_root: Optional[str] = None) -> FastAPI:
         return FileResponse(ROOT / 'workbench_v7' / 'public_demo.html')
 
     @app.get('/api/ui-demo/{endpoint:path}')
-    def demo_ui_data(endpoint: str):
+    def demo_ui_data(endpoint: str, request: Request):
+        if endpoint.startswith('blogger-lab/'):
+            from scripts.public_lab_fixture import lab_fixture
+            return lab_fixture(endpoint[len('blogger-lab/'):], request.query_params)
         return ui_fixture(endpoint)
 
     @app.get('/api/demo')
@@ -107,6 +110,8 @@ def create_preview_app(lab_root: Optional[str] = None) -> FastAPI:
             page = page.replace('<html lang="zh-CN">', '<html lang="zh-CN" data-ui-demo="synthetic-v1">', 1)
             label = '<strong>界面示例 · 合成数据</strong>　非实时行情，不代表选股结果或真实账户'
             links = '<a href="/v7">查看无数据状态</a><a href="/replay">历史撮合回放</a>'
+            lab_notice = '<aside class="notice-box notice-info" role="note"><span><strong>只读界面示例</strong> · 虚构资料及手写知识、候选、成交样例，非模型输出或实测业绩。可切换五步并查看原文；实际运行请按博主实验室文档启用。</span></aside>'
+            page = page.replace('<section class="page-view" id="page-blogger-lab">', '<section class="page-view" id="page-blogger-lab">' + lab_notice, 1)
         else:
             label = '<strong>公开源码预览</strong>　未接入实时行情或实际账户'
             links = '<a href="/demo">查看新版界面示例</a><a href="/replay">查看历史撮合演示</a>'
@@ -129,7 +134,7 @@ def main():
     if not 1024 <= args.port <= 65535:
         parser.error('port must be between 1024 and 65535')
     import uvicorn
-    print(f'V7 public preview: http://127.0.0.1:{args.port}/demo', flush=True)
+    print(f'知策 public preview: http://127.0.0.1:{args.port}/demo', flush=True)
     uvicorn.run(create_preview_app(), host='127.0.0.1', port=args.port, log_level='warning')
 
 

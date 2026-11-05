@@ -2,6 +2,7 @@
 testpaths = [
   "tests/test_public_preview.py",
   "tests/test_public_ui.py",
+  "tests/test_public_lab_demo.py",
   "tests/test_public_privacy_gate.py",
   "tests/test_blogger_lab.py",
   "tests/datasource/test_provider_adapters.py",

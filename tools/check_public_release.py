@@ -32,14 +32,17 @@ TEXT_SUFFIXES = {'.py', '.md', '.txt', '.json', '.yaml', '.yml', '.toml', '.js',
 REVIEWED_BINARY = {
     'docs/diagrams/research-workflow.svg': '0edd2cfee6faa3c758d40af7fdd9a8936153e0446a350bbf0a1f63606ab3077f',
     'docs/diagrams/system-architecture.svg': '6537d3ef1dce6b88589cff9d68f8bfe0eb7cbe321e8d8c3108217d3a51f73875',
-    'docs/images/ui-v3-overview-nav.jpg': '16dd7f15cd99aa2cd0c82625b1c7413cd3ff562ac2da060080ef9103aa0c859b',
-    'docs/images/ui-v3-news-nav.jpg': 'd09473314d8ed0b0e09ada7699914f2350c2b04b8c866af9750c06a9609bea21',
-    'docs/images/ui-v3-picks-nav.jpg': '5f398af282f4417206d5bbe0e24d86458cd908754b1d9a9103700919eff1fde7',
-    'docs/images/ui-v3-overview.jpg': '16dd7f15cd99aa2cd0c82625b1c7413cd3ff562ac2da060080ef9103aa0c859b',
-    'docs/images/ui-v3-news.jpg': 'd09473314d8ed0b0e09ada7699914f2350c2b04b8c866af9750c06a9609bea21',
-    'docs/images/ui-v3-picks.jpg': '5f398af282f4417206d5bbe0e24d86458cd908754b1d9a9103700919eff1fde7',
-
+    'docs/images/ui-v3-overview-nav.jpg': '948874eb59b635bd2d268f22fcaa42b499b3e78f3cf0f9930d4de0c2c2720646',
+    'docs/images/ui-v3-news-nav.jpg': 'c33b4d6f22d8bb0e440a8d2ff5c72e8a6a7a116b890eba083f4591bdb061d9c7',
+    'docs/images/ui-v3-picks-nav.jpg': 'a3c27ef72cfeaec3ecc1d96e87ef4aa56346b50b8b35a2135d0c3a30777f86b1',
+    'docs/images/ui-v3-overview.jpg': '948874eb59b635bd2d268f22fcaa42b499b3e78f3cf0f9930d4de0c2c2720646',
+    'docs/images/ui-v3-news.jpg': 'c33b4d6f22d8bb0e440a8d2ff5c72e8a6a7a116b890eba083f4591bdb061d9c7',
+    'docs/images/ui-v3-picks.jpg': 'a3c27ef72cfeaec3ecc1d96e87ef4aa56346b50b8b35a2135d0c3a30777f86b1',
     'models/ai_quant/calibrator_AIQ-V1.0.pkl': '8e6bbc3d27a155947d3b1df7bc1cd918f523dab960c081c9aa535ceba9931b9c',
+    'docs/images/blogger-lab-knowledge.jpg': '0947c81b796ba26da4eb45d30f7751aa5ac32e4a256653992117fbabc5eb6c1f',
+    'docs/images/blogger-lab-strategy.jpg': 'b3336384ac8d893273550211fa6baff8e3580af8b7acf2acd171d4415e9b79c0',
+    'docs/images/blogger-lab-scan.jpg': 'ae26d99593eca59f4aea51ece9a341919283f93d585d7b6d29488ffbcd9526b7',
+    'docs/images/blogger-lab-paper.jpg': 'ce56c02971932a4841d73bb576e06a80b2a5af8d1c99c83e13d233f50b950a8e',
 }
 
 
@@ -71,12 +74,12 @@ def findings_for(path, content, exceptions=()):
 # Exact previously reviewed image bytes remain valid only while scanning Git history.
 # Current worktree files must always match REVIEWED_BINARY above.
 REVIEWED_BINARY_HISTORY = {
-    'docs/images/ui-v3-overview-nav.jpg': {'87d1fac84cc019b47ae80e835da6b07231056872b50f61b46a958e287bab9ad3'},
-    'docs/images/ui-v3-news-nav.jpg': {'73060cd3df0416e17076cc1bc39a584155551c2bf7e149a99f45f4a9cf08a98c'},
-    'docs/images/ui-v3-picks-nav.jpg': {'8a611f50c9eb56dcb3fdedf6fc7f79fd053949db7d46f7e0d4cdaf6b38a20cf9'},
-    'docs/images/ui-v3-overview.jpg': {'33e45575fad0fc7ee9bd748cac666d23aa2690c78777dea8e7ec6e9043d238b2'},
-    'docs/images/ui-v3-news.jpg': {'a374d090746d967cb9ad2775d42835b38b0ec3e33061e5ce4b1fe2fd9f078052'},
-    'docs/images/ui-v3-picks.jpg': {'91a9e799e10a2f7dcda50252f8f989604cdd2261c1ebec01ce75a273b937c821'},
+    'docs/images/ui-v3-overview-nav.jpg': {'16dd7f15cd99aa2cd0c82625b1c7413cd3ff562ac2da060080ef9103aa0c859b', '87d1fac84cc019b47ae80e835da6b07231056872b50f61b46a958e287bab9ad3'},
+    'docs/images/ui-v3-news-nav.jpg': {'73060cd3df0416e17076cc1bc39a584155551c2bf7e149a99f45f4a9cf08a98c', 'd09473314d8ed0b0e09ada7699914f2350c2b04b8c866af9750c06a9609bea21'},
+    'docs/images/ui-v3-picks-nav.jpg': {'5f398af282f4417206d5bbe0e24d86458cd908754b1d9a9103700919eff1fde7', '8a611f50c9eb56dcb3fdedf6fc7f79fd053949db7d46f7e0d4cdaf6b38a20cf9'},
+    'docs/images/ui-v3-overview.jpg': {'16dd7f15cd99aa2cd0c82625b1c7413cd3ff562ac2da060080ef9103aa0c859b', '33e45575fad0fc7ee9bd748cac666d23aa2690c78777dea8e7ec6e9043d238b2'},
+    'docs/images/ui-v3-news.jpg': {'a374d090746d967cb9ad2775d42835b38b0ec3e33061e5ce4b1fe2fd9f078052', 'd09473314d8ed0b0e09ada7699914f2350c2b04b8c866af9750c06a9609bea21'},
+    'docs/images/ui-v3-picks.jpg': {'5f398af282f4417206d5bbe0e24d86458cd908754b1d9a9103700919eff1fde7', '91a9e799e10a2f7dcda50252f8f989604cdd2261c1ebec01ce75a273b937c821'},
 }
 
 

@@ -280,3 +280,11 @@
 !/examples/blogger_lab/01_synthetic_researcher_sample.txt
 !/tests/test_blogger_lab.py
 !/docs/BLOGGER_LAB.md
+
+# Reviewed Zhice public lab specimens and synthetic screenshots.
+!/scripts/public_lab_fixture.py
+!/tests/test_public_lab_demo.py
+!/docs/images/blogger-lab-knowledge.jpg
+!/docs/images/blogger-lab-strategy.jpg
+!/docs/images/blogger-lab-scan.jpg
+!/docs/images/blogger-lab-paper.jpg

@@ -47,7 +47,7 @@ def test_environment_template_requires_empty_sensitive_values():
 def test_reviewed_ui_screenshots_are_exactly_pinned_not_a_generic_image_allowance():
     images = {path: sha for path, sha in guard.REVIEWED_BINARY.items() if path.startswith('docs/images/')}
     current_images = set(re.findall(r'\((docs/images/[^)]+)\)', (ROOT / 'README.md').read_text(encoding='utf-8')))
-    assert len(current_images) == 3 and current_images <= images.keys()
+    assert len(current_images) == 7 and current_images <= images.keys()
     for path, expected in images.items():
         body = (ROOT / path).read_bytes()
         assert body.startswith(b'\xff\xd8') and hashlib.sha256(body).hexdigest() == expected

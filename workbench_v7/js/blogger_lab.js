@@ -8,6 +8,18 @@
 (function(window) {
   'use strict';
 
+  function isSyntheticDemo() {
+    return document.documentElement.getAttribute('data-ui-demo') === 'synthetic-v1';
+  }
+
+  // Public specimens use a separate read-only namespace, even if the real lab is enabled.
+  function labFetch(url, options) {
+    if (isSyntheticDemo()) {
+      url = url.replace('/api/blogger-lab/', '/api/ui-demo/blogger-lab/');
+    }
+    return window.fetch(url, options);
+  }
+
   // 内部状态
   var state = {
     initialized: false,
@@ -95,7 +107,7 @@
     if (gen === undefined) gen = state.pageGeneration;
     var token = ++state.personaSwitchToken;
     try {
-      var res = await fetch('/api/blogger-lab/personas');
+      var res = await labFetch('/api/blogger-lab/personas');
       if (!state.isPageActive || gen !== state.pageGeneration || token !== state.personaSwitchToken) return;
 
       if (!res.ok) {
@@ -198,7 +210,7 @@
     if (gen === undefined) gen = state.pageGeneration;
 
     try {
-      var res = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/overview');
+      var res = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/overview');
       if (!state.isPageActive || gen !== state.pageGeneration || token !== state.personaSwitchToken) return;
 
       if (!res.ok) {
@@ -290,7 +302,7 @@
     if (btn) btn.disabled = true;
 
     try {
-      var res = await fetch('/api/blogger-lab/personas', {
+      var res = await labFetch('/api/blogger-lab/personas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: name, persona_id: pId || null, description: desc })
@@ -338,7 +350,7 @@
     }
 
     try {
-      var res = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/batches', {
+      var res = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/batches', {
         method: 'POST',
         body: formData
       });
@@ -384,7 +396,7 @@
     if (gen === undefined) gen = state.pageGeneration;
 
     try {
-      var res = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/batches');
+      var res = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/batches');
       if (!state.isPageActive || gen !== state.pageGeneration || token !== state.personaSwitchToken) return;
 
       var json = await res.json();
@@ -428,7 +440,7 @@
     if (btn) btn.disabled = true;
 
     try {
-      var res = await fetch('/api/blogger-lab/batches/' + batchId + '/extract', {
+      var res = await labFetch('/api/blogger-lab/batches/' + batchId + '/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -482,7 +494,7 @@
     var currentGen = state.pageGeneration;
 
     try {
-      var res = await fetch('/api/blogger-lab/jobs/' + state.currentJobId + '?persona_id=' + state.currentPersonaId);
+      var res = await labFetch('/api/blogger-lab/jobs/' + state.currentJobId + '?persona_id=' + state.currentPersonaId);
       if (!state.isPageActive || currentGen !== state.pageGeneration || currentToken !== state.personaSwitchToken) return;
 
       var json = await res.json();
@@ -547,7 +559,7 @@
     if (btn) btn.disabled = true;
 
     try {
-      var res = await fetch('/api/blogger-lab/jobs/' + state.currentJobId + '/retry', {
+      var res = await labFetch('/api/blogger-lab/jobs/' + state.currentJobId + '/retry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -576,7 +588,7 @@
     if (!state.currentPersonaId) return;
     var token = state.personaSwitchToken;
     try {
-      var res = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/knowledge?version_id=' + versionId);
+      var res = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/knowledge?version_id=' + versionId);
       if (token !== state.personaSwitchToken) return;
 
       var json = await res.json();
@@ -632,7 +644,7 @@
 
   async function viewExcerpt(sourceId, start, end) {
     try {
-      var res = await fetch('/api/blogger-lab/sources/' + sourceId + '/excerpt?persona_id=' + state.currentPersonaId + '&start_char=' + start + '&end_char=' + end);
+      var res = await labFetch('/api/blogger-lab/sources/' + sourceId + '/excerpt?persona_id=' + state.currentPersonaId + '&start_char=' + start + '&end_char=' + end);
       var json = await res.json();
       if (json.status === 'ok') {
         var titleEl = $('#modalSourceTitle');
@@ -673,7 +685,7 @@
     var token = state.personaSwitchToken;
 
     try {
-      var res = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/strategies');
+      var res = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/strategies');
       if (token !== state.personaSwitchToken) return;
 
       var json = await res.json();
@@ -785,7 +797,7 @@
   async function generateDraft() {
     if (!state.currentPersonaId) return;
     try {
-      var kvRes = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/knowledge');
+      var kvRes = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/knowledge');
       var kvJson = await kvRes.json();
       var versions = kvJson.data ? (kvJson.data.versions || []) : [];
       if (versions.length === 0) {
@@ -793,7 +805,7 @@
         return;
       }
       var latestKv = versions[versions.length - 1];
-      var res = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/strategy-drafts', {
+      var res = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/strategy-drafts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ knowledge_version_id: latestKv.id })
@@ -866,7 +878,7 @@
     };
 
     try {
-      var res = await fetch('/api/blogger-lab/strategy-drafts/' + state.currentDraft.id, {
+      var res = await labFetch('/api/blogger-lab/strategy-drafts/' + state.currentDraft.id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -900,7 +912,7 @@
     if (btn) btn.disabled = true;
 
     try {
-      var res = await fetch('/api/blogger-lab/strategy-drafts/' + state.currentDraft.id + '/confirm', {
+      var res = await labFetch('/api/blogger-lab/strategy-drafts/' + state.currentDraft.id + '/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -942,7 +954,7 @@
     }
 
     try {
-      var res = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/scans', {
+      var res = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/scans', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -978,6 +990,10 @@
   }
 
   function renderScanResults(run) {
+    if (isSyntheticDemo()) {
+      var demoDate = $('#scanAsOfDate');
+      if (demoDate) demoDate.value = run.as_of_date || '';
+    }
     var summaryBox = $('#scanSummaryBox');
     var summaryText = $('#lblScanSummaryText');
     var candCount = $('#lblCandidatesCount');
@@ -1072,7 +1088,7 @@
     var reqKey = state.lastRequestKeys[keyProp];
 
     try {
-      var res = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/replay-step', {
+      var res = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/replay-step', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1126,7 +1142,7 @@
     var token = state.personaSwitchToken;
 
     try {
-      var res = await fetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/paper?mode=REPLAY');
+      var res = await labFetch('/api/blogger-lab/personas/' + state.currentPersonaId + '/paper?mode=REPLAY');
       if (token !== state.personaSwitchToken) return;
 
       var json = await res.json();
@@ -1313,6 +1329,20 @@
     if (!root) return;
 
     bindEvents();
+    if (isSyntheticDemo()) {
+      ['btnCreatePersona', 'btnUploadBatch', 'btnStartExtract', 'btnRetryJob',
+       'btnGenDraft', 'btnSaveDraft', 'btnConfirmDraft', 'btnRunScan',
+       'btnStep1', 'btnStep2', 'btnStep3', 'corpusFiles', 'newPersonaName',
+       'newPersonaId', 'newPersonaDesc', 'draftStopLoss', 'draftTakeProfit',
+       'draftPositionFraction', 'draftEntryRulesJson', 'chkUseMock',
+       'scanMode', 'scanAsOfDate'].forEach(function(id) {
+        var el = $('#' + id);
+        if (el) {
+          el.disabled = true;
+          el.title = '只读界面示例；实际运行请按文档启用博主实验室';
+        }
+      });
+    }
     state.initialized = true;
 
     // 恢复本地存储的活跃步骤
