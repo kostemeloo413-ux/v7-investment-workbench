@@ -92,7 +92,9 @@ py -3.13 -m venv .venv
 
 端口占用时追加 `--port 8021`。没有 Python Launcher 时，用 Python 3.13 解释器完整路径代替 `py -3.13`。macOS/Linux 可使用 `python3.13` 与 `.venv/bin/python`，尚未完成同等范围的平台验证。
 
-**运行自己的博主实验：**停止上述预览后，在同一终端启用独立实验目录并重新启动：
+**运行自己的博主实验**
+
+停止上述预览后，在同一终端启用独立实验目录并重新启动：
 
 ```powershell
 $env:V7_BLOGGER_LAB_ENABLED="1"
