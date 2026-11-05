@@ -116,7 +116,6 @@
 /* Read-only integrations are settings rows, not an unrelated collection of KPI tiles. */
 :is(#page-llm,#page-wecom) :is(#llm-grid,#wecom-grid) {
   display:block;
-  max-width:1080px;
   border:1px solid var(--border);
   border-radius:10px;
   background:var(--surface);
@@ -124,7 +123,7 @@
 }
 :is(#page-llm,#page-wecom) .system-config-row {
   display:grid;
-  grid-template-columns:minmax(180px,.85fr) minmax(0,1.4fr);
+  grid-template-columns:minmax(180px,300px) minmax(0,680px);
   align-items:start;
   gap:24px;
   margin:0;
@@ -429,7 +428,6 @@
 
 /* Settings retain the original controls and persistence, with the same sheet detail as integrations. */
 #page-settings .settings-layout {
-  max-width:1180px;
   grid-template-columns:minmax(0,1.8fr) minmax(270px,1fr);
   gap:20px;
 }
@@ -447,6 +445,7 @@
 }
 #page-settings .setting-row select {
   width:100%;
+  max-width:560px;
   font-size:13px;
 }
 #page-settings .settings-save {

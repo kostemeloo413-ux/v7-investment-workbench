@@ -20,7 +20,7 @@ def test_demo_and_empty_view_share_latest_component_markup_but_use_separate_apis
         for response in (demo, empty):
             assert response.status_code == 200
             assert '候选股票热力格' in response.text
-            assert 'home-v3.css?v=20261029-v3-r3' in response.text
+            assert 'home-v3.css?v=20261105-fluid' in response.text
             assert 'market-pages.js?v=20261029-v3-r3' in response.text
             assert response.headers['Cache-Control'] == 'no-store'
         assert 'data-ui-demo="synthetic-v1"' in demo.text

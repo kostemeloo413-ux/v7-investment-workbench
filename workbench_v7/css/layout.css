@@ -83,7 +83,7 @@ button { color: inherit; }
 .nav-item.active { background: var(--accent-soft); color: #1d4ed8; font-weight: 700; }
 .sidebar-foot { margin-top: auto; padding: 14px 18px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 11px; }
 .sidebar-foot span { color: var(--critical); font-family: var(--font-mono); font-weight: 700; }
-.main-content { max-width: 1600px; margin-left: max(236px, calc(236px + (100% - 236px - 1600px) / 2)); margin-right: auto; padding: 28px 32px 20px; }
+.main-content { min-width: 0; margin-left: 236px; padding: 28px 32px 20px; }
 .page-view { display: none; min-height: calc(100vh - 120px); }
 .page-view.active { display: block; }
 .page-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; margin: 0 0 24px; padding-bottom: 17px; border-bottom: 1px solid var(--border); }
@@ -312,7 +312,6 @@ button { color: inherit; }
 }
 
 /* Phase 4 Option A: a readable evidence page, without a score dashboard. */
-#page-scoring { max-width: 960px; margin-inline: auto; }
 #page-scoring .page-heading, #page-scoring .lookup-form, #stock-detail-warning, #stock-detail { max-width: 960px; }
 #stock-detail { display: flex; flex-direction: column; gap: 18px; }
 #stock-detail:empty, #stock-detail-warning[hidden] { display: none; }

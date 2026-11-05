@@ -6,14 +6,14 @@
   <meta name="color-scheme" content="light">
   <title>知策 · AI 投研与策略实验工作台</title>
   <link rel="stylesheet" href="/workbench_v7/css/tokens.css">
-  <link rel="stylesheet" href="/workbench_v7/css/layout.css?v=fullscreen-layout-v2-1-r1">
+  <link rel="stylesheet" href="/workbench_v7/css/layout.css?v=20261105-fluid">
 <link rel="stylesheet" href="/workbench_v7/css/arena.css?v=arena-grid-dialog-r1">
-<link rel="stylesheet" href="/workbench_v7/css/unified.css?v=20261029-v3">
-  <link rel="stylesheet" href="/workbench_v7/css/home-v3.css?v=20261029-v3-r3">
+<link rel="stylesheet" href="/workbench_v7/css/unified.css?v=20261105-fluid">
+  <link rel="stylesheet" href="/workbench_v7/css/home-v3.css?v=20261105-fluid">
   <link rel="stylesheet" href="/workbench_v7/css/market-pages.css?v=20261029-v3-r3">
   <link rel="stylesheet" href="/workbench_v7/css/account-pages.css?v=20261029-v3-r2">
-  <link rel="stylesheet" href="/workbench_v7/css/system-pages.css?v=20261029-v3">
-  <link rel="stylesheet" href="/workbench_v7/css/blogger_lab.css">
+  <link rel="stylesheet" href="/workbench_v7/css/system-pages.css?v=20261105-fluid">
+  <link rel="stylesheet" href="/workbench_v7/css/blogger_lab.css?v=20261105-fluid">
 </head>
 <body>
   <header class="topbar" id="top-context-bar">
@@ -344,38 +344,38 @@
 
         <!-- 步骤 2: 全文提炼任务监控 -->
         <section id="step2" class="step-panel">
-          <div class="card">
+          <div class="card lab-extract-task">
             <div class="card-header">
               <h3 class="card-title">启动知识提炼任务</h3>
               <span class="badge badge-gray">单个后台工作器</span>
             </div>
-            <p class="card-desc">基于分块严格提取博主投资哲学、入场条件、退出规则与风控约束，要求必须原样复制原文连续片段作为引文 (Citation)。</p>
+            <p class="card-desc">按资料批次提炼投资原则、进出场规则和风控约束，并保留原文引文。</p>
             
-            <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
-              <div class="form-group" style="margin-bottom: 0; min-width: 240px;">
+            <div class="lab-extract-controls">
+              <div class="form-group lab-extract-batch">
                 <label class="form-label" for="extractBatchSelect">待提炼资料批次</label>
                 <select id="extractBatchSelect" class="form-select"></select>
               </div>
-              <div class="form-group" style="margin-bottom: 0;">
+              <div class="form-group">
                 <label class="form-label">运行模式</label>
                 <label style="display: flex; align-items: center; gap: 6px; font-size: 13px; padding-top: 6px; cursor: pointer;">
                   <input type="checkbox" id="chkUseMock" checked>
-                  <span>使用确定性演示模式 (Mock 离线确定性闭环)</span>
+                  <span>确定性演示模式 (Mock)</span>
                 </label>
               </div>
               <button id="btnStartExtract" class="btn btn-primary" type="button">提交提炼任务</button>
               <button id="btnRetryJob" class="btn btn-secondary" type="button" style="display: none;">断点续跑重试</button>
             </div>
 
-            <div id="jobMonitorBox" style="margin-top: 20px; display: none;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div id="jobMonitorBox" class="lab-extract-progress" style="display: none;">
+              <div class="lab-progress-line">
                 <span style="font-weight: 600; font-size: 13px;">任务编号: <code id="lblJobId"></code></span>
                 <span id="lblJobStatus" class="badge badge-gray">PENDING</span>
               </div>
               <div class="progress-bar-container">
                 <div id="progressBar" class="progress-bar"></div>
               </div>
-              <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--lab-color-text-sub);">
+              <div class="lab-progress-line lab-progress-meta">
                 <span id="lblProgressStats">已处理 0 / 0 块</span>
                 <span id="lblChunkDetails">成功: 0 | 部分: 0 | 失败: 0</span>
               </div>
@@ -383,28 +383,52 @@
             </div>
           </div>
 
-          <!-- 提炼条目预览 -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">已提炼知识条目预览</h3>
-              <span id="lblItemsCount" class="badge badge-gray">0 条</span>
+          <div class="lab-knowledge-workspace">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">已提炼知识条目预览</h3>
+                <span id="lblItemsCount" class="badge badge-gray">0 条</span>
+              </div>
+              <div class="table-container">
+                <table id="tblKnowledgeItems">
+                  <thead>
+                    <tr>
+                      <th>标识</th>
+                      <th>类型 (Kind)</th>
+                      <th>规则陈述 (Statement)</th>
+                      <th>原文引文 (Citation)</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td colspan="5" style="text-align: center; color: #94a3b8;">暂无数据，请先提交提炼任务</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-            <div class="table-container">
-              <table id="tblKnowledgeItems">
-                <thead>
-                  <tr>
-                    <th>标识</th>
-                    <th>类型 (Kind)</th>
-                    <th>规则陈述 (Statement)</th>
-                    <th>原文引文 (Citation)</th>
-                    <th>操作</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td colspan="5" style="text-align: center; color: #94a3b8;">暂无数据，请先提交提炼任务</td></tr>
-                </tbody>
-              </table>
-            </div>
+            <!-- 原文在宽屏并排显示，在窄屏使用弹窗。 -->
+            <aside id="excerptModal" class="modal-overlay lab-source" aria-label="来源原文">
+              <div class="lab-source-placeholder">
+                <h3 class="card-title">来源原文</h3>
+                <p>在知识条目中选择「查看原文切片」。</p>
+              </div>
+              <div class="modal-box" aria-labelledby="modalSourceTitle">
+                <div class="modal-header">
+                  <h3 id="modalSourceTitle" style="font-size: 14px; font-weight: 700; margin: 0;">来源原文切片查看</h3>
+                  <button id="modalCloseX" type="button" aria-label="关闭原文" style="border: none; background: none; font-size: 18px; cursor: pointer;">&times;</button>
+                </div>
+                <div class="modal-body" aria-live="polite">
+                  <div style="margin-bottom: 10px; font-size: 12px; color: var(--lab-color-text-sub);">
+                    <span>来源 ID: <code id="modalSourceId"></code></span> |
+                    <span>字符区间: [<span id="modalCharRange"></span>]</span>
+                  </div>
+                  <div id="modalExcerptContent" style="background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid var(--lab-color-border); font-family: monospace; white-space: pre-wrap;"></div>
+                </div>
+                <div class="modal-footer">
+                  <button id="btnModalClose" class="btn btn-secondary" type="button">关闭</button>
+                </div>
+              </div>
+            </aside>
           </div>
         </section>
 
@@ -622,25 +646,7 @@
           </div>
         </section>
 
-        <!-- 原文切片查看弹窗 -->
-        <div id="excerptModal" class="modal-overlay">
-          <div class="modal-box">
-            <div class="modal-header">
-              <h3 id="modalSourceTitle" style="font-size: 14px; font-weight: 700; margin: 0;">来源原文切片查看</h3>
-              <button id="modalCloseX" type="button" style="border: none; background: none; font-size: 18px; cursor: pointer;">&times;</button>
-            </div>
-            <div class="modal-body">
-              <div style="margin-bottom: 10px; font-size: 12px; color: var(--lab-color-text-sub);">
-                <span>来源 ID: <code id="modalSourceId"></code></span> | 
-                <span>字符区间: [<span id="modalCharRange"></span>]</span>
-              </div>
-              <div id="modalExcerptContent" style="background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid var(--lab-color-border); font-family: monospace; white-space: pre-wrap;"></div>
-            </div>
-            <div class="modal-footer">
-              <button id="btnModalClose" class="btn btn-secondary" type="button">关闭</button>
-            </div>
-          </div>
-        </div>
+
       </section>
 
       <footer class="page-footer"><span>知策 V7 · 研究与模拟工作台</span><span id="footer-source">状态与来源见系统详情</span><span>研究与模拟 · 不接实盘</span></footer>
@@ -662,7 +668,7 @@
 <script src="/workbench_v7/js/market-pages.js?v=20261029-v3-r3"></script>
 <script src="/workbench_v7/js/account-pages.js?v=20261029-v3-r2"></script>
 <script src="/workbench_v7/js/system-pages.js?v=20261029-v3"></script>
-<script src="/workbench_v7/js/blogger_lab.js"></script>
+<script src="/workbench_v7/js/blogger_lab.js?v=20261105-fluid"></script>
   <script src="/workbench_v7/js/blogger_lab_entry.js"></script>
 </body>
 </html>

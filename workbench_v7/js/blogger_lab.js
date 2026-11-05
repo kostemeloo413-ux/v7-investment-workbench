@@ -45,6 +45,9 @@
     }
   };
 
+  var excerptRequest = 0;
+  var excerptTrigger = null;
+
   var STORAGE_KEY_STEP = 'v7_lab_active_step';
   var STORAGE_KEY_PERSONA = 'v7_lab_active_persona';
 
@@ -82,6 +85,7 @@
 
   // 步骤切换 (保持顶层路由 #page-blogger-lab，绝不使用 #step2 覆盖主路由)
   function switchStep(stepIndex) {
+    closeModal(false);
     state.activeStep = stepIndex;
     try {
       localStorage.setItem(STORAGE_KEY_STEP, String(stepIndex));
@@ -175,6 +179,7 @@
 
   async function onPersonaChanged(userInitiated) {
     if (!state.isPageActive) return;
+    closeModal(false);
     var gen = state.pageGeneration;
     var sel = $('#personaSelect');
     if (sel && sel.value) {
@@ -608,6 +613,7 @@
 
     var tbody = $('#tblKnowledgeItems tbody');
     if (!tbody) return;
+    closeModal(false);
     tbody.innerHTML = '';
 
     if (!items || items.length === 0) {
@@ -624,12 +630,12 @@
       var end = cit ? ((cit.end !== undefined && cit.end !== null) ? cit.end : 0) : 0;
 
       tr.innerHTML = 
-        '<td><code>' + it.id + '</code></td>' +
-        '<td><span class="badge badge-gray">' + it.kind + '</span></td>' +
-        '<td style="max-width: 300px;">' + it.statement + '</td>' +
-        '<td style="max-width: 260px; font-style: italic; color: #475569;">"' + quoteText + '"</td>' +
+        '<td><code>' + escapeHtml(String(it.id || '')) + '</code></td>' +
+        '<td><span class="badge badge-gray">' + escapeHtml(String(it.kind || '')) + '</span></td>' +
+        '<td>' + escapeHtml(String(it.statement || '')) + '</td>' +
+        '<td class="lab-quote">' + escapeHtml(String(quoteText || '—')) + '</td>' +
         '<td>' +
-          (cit ? '<button class="btn btn-secondary btn-view-excerpt" style="padding: 3px 8px; font-size: 11px;" data-src="' + srcId + '" data-start="' + start + '" data-end="' + end + '">查看原文切片</button>' : '—') +
+          (cit ? '<button type="button" class="btn btn-secondary btn-view-excerpt" aria-controls="excerptModal" data-src="' + escapeHtml(String(srcId)) + '" data-start="' + start + '" data-end="' + end + '">查看原文切片</button>' : '—') +
         '</td>';
       tbody.appendChild(tr);
     });
@@ -637,15 +643,18 @@
     // 绑定查看原文切片事件
     tbody.querySelectorAll('.btn-view-excerpt').forEach(function(b) {
       b.addEventListener('click', function() {
-        viewExcerpt(b.dataset.src, parseInt(b.dataset.start, 10), parseInt(b.dataset.end, 10));
+        viewExcerpt(b.dataset.src, parseInt(b.dataset.start, 10), parseInt(b.dataset.end, 10), b);
       });
     });
   }
 
-  async function viewExcerpt(sourceId, start, end) {
+  async function viewExcerpt(sourceId, start, end, trigger) {
+    closeModal(false);
+    var request = excerptRequest;
     try {
-      var res = await labFetch('/api/blogger-lab/sources/' + sourceId + '/excerpt?persona_id=' + state.currentPersonaId + '&start_char=' + start + '&end_char=' + end);
+      var res = await labFetch('/api/blogger-lab/sources/' + encodeURIComponent(sourceId) + '/excerpt?persona_id=' + encodeURIComponent(state.currentPersonaId) + '&start_char=' + start + '&end_char=' + end);
       var json = await res.json();
+      if (request !== excerptRequest || !state.isPageActive) return;
       if (json.status === 'ok') {
         var titleEl = $('#modalSourceTitle');
         var srcEl = $('#modalSourceId');
@@ -657,13 +666,22 @@
         if (srcEl) srcEl.textContent = json.data.source_id;
         if (rangeEl) rangeEl.textContent = json.data.start_char + ' ~ ' + json.data.end_char + ' / ' + json.data.total_chars + '字';
         if (contentEl) contentEl.innerHTML = '<span class="excerpt-highlight">' + escapeHtml(json.data.excerpt) + '</span>';
-        if (modal) modal.classList.add('active');
+        if (!modal) return;
+        excerptTrigger = trigger || null;
+        if (trigger) trigger.closest('tr').classList.add('is-source-selected');
+        modal.classList.add('active');
+        if (window.getComputedStyle(modal).position === 'fixed') {
+          var box = modal.querySelector('.modal-box');
+          box.setAttribute('role', 'dialog');
+          box.setAttribute('aria-modal', 'true');
+          $('#modalCloseX').focus();
+        }
       } else {
         var errs = json.errors || [];
         alert('读取原文切片失败: ' + errs.map(function(e) { return e.message; }).join('; '));
       }
     } catch (e) {
-      alert('读取原文切片异常: ' + e.message);
+      if (request === excerptRequest && state.isPageActive) alert('读取原文切片异常: ' + e.message);
     }
   }
 
@@ -672,9 +690,20 @@
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  function closeModal() {
+  function closeModal(restoreFocus) {
+    ++excerptRequest;
     var modal = $('#excerptModal');
-    if (modal) modal.classList.remove('active');
+    if (modal) {
+      modal.classList.remove('active');
+      var box = modal.querySelector('.modal-box');
+      box.removeAttribute('role');
+      box.removeAttribute('aria-modal');
+    }
+    if (excerptTrigger) {
+      excerptTrigger.closest('tr').classList.remove('is-source-selected');
+      if (restoreFocus !== false && excerptTrigger.isConnected) excerptTrigger.focus();
+      excerptTrigger = null;
+    }
   }
 
   // ==========================================
@@ -1321,6 +1350,13 @@
     if (modalCloseX) modalCloseX.addEventListener('click', closeModal);
     var btnModalClose = $('#btnModalClose');
     if (btnModalClose) btnModalClose.addEventListener('click', closeModal);
+    var excerpt = $('#excerptModal');
+    if (excerpt) excerpt.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' && excerpt.classList.contains('active')) {
+        event.preventDefault();
+        closeModal();
+      }
+    });
   }
 
   function init() {
@@ -1365,6 +1401,7 @@
 
   // 生命周期：离开实验页面
   function onLeave() {
+    closeModal(false);
     state.isPageActive = false;
     ++state.pageGeneration;
     ++state.personaSwitchToken;
